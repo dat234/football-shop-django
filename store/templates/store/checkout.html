@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh toán</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .checkout-container { display: flex; max-width: 1000px; margin: auto; }
+        .form-column { flex: 2; padding-right: 20px; }
+        .summary-column { flex: 1; border-left: 1px solid #ccc; padding-left: 20px; }
+        .form-column input, .form-column textarea { width: 90%; padding: 8px; margin-bottom: 10px; }
+        .voucher-form { display: flex; gap: 10px; }
+        .voucher-form input { flex: 1; }
+        .error-message { color: red; }
+        .success-message { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Thanh toán Đơn hàng</h1>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <p class="{% if message.tags %}{{ message.tags }}{% endif %}-message">
+                {{ message }}
+            </p>
+        {% endfor %}
+    {% endif %}
+
+    <a href="{% url 'cart_view' %}"> &lt; Quay lại Giỏ hàng</a>
+    <hr>
+
+    <div class="checkout-container">
+        
+        <div class="form-column">
+            <h3>Thông tin giao hàng</h3>
+            
+            <form action="{% url 'checkout' %}" method="POST">
+                {% csrf_token %}
+                
+                <label for="full_name">Họ và tên:</label><br>
+                <input type="text" name="full_name" required><br>
+                
+                <label for="email">Email:</label><br>
+                <input type="email" name="email" required><br>
+                
+                <label for="phone">Số điện thoại:</label><br>
+                <input type="text" name="phone" required><br>
+                
+                <label for="address">Địa chỉ nhận hàng:</label><br>
+                <textarea name="address" rows="4" required></textarea><br><br>
+                
+                <input type="hidden" name="voucher_code" value="{{ voucher.code|default:'' }}">
+                
+                <button type="submit" name="action" value="place_order" style="padding: 15px 25px; font-size: 18px; background-color: green; color: white;">
+                    Xác nhận Đặt hàng
+                </button>
+            </form>
+            
+            <hr style="margin: 20px 0;">
+
+            <h3>Mã giảm giá</h3>
+            <form action="{% url 'checkout' %}" method="POST" class="voucher-form">
+                {% csrf_token %}
+                <input type="text" name="voucher_code" placeholder="Nhập mã giảm giá..." 
+                       value="{{ voucher.code|default:'' }}" 
+                       {% if voucher %}readonly{% endif %}>
+                       
+                {% if voucher %}
+                    <button type="submit" name="action" value="remove_voucher" style="background-color: red; color: white;">Xóa mã</button>
+                {% else %}
+                    <button type="submit" name="action" value="apply_voucher">Áp dụng</button>
+                {% endif %}
+            </form>
+            
+        </div>
+
+        <div class="summary-column">
+            <h3>Đơn hàng của bạn</h3>
+            {% for item in cart_items %}
+                <p>
+                    {{ item.product.name }} (x{{ item.quantity }})
+                    <span style="float: right;">{{ item.subtotal }} VNĐ</span>
+                </p>
+            {% endfor %}
+            <hr>
+            <p>Tạm tính: <span style="float: right;">{{ total_price }} VNĐ</span></p>
+            
+            {% if discount_amount > 0 %}
+            <p style="color: green;">Giảm giá ({{ voucher.code }}): 
+                <span style="float: right;">-{{ discount_amount }} VNĐ</span>
+            </p>
+            <hr>
+            {% endif %}
+            
+            <h3>Tổng cộng: <span style="float: right;">{{ final_price }} VNĐ</span></h3>
+        </div>
+
+    </div>
+</body>
+</html>

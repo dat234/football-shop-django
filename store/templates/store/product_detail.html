@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        .product-container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .product-container img {
+            max-width: 100%;
+        }
+
+        /* CSS cho thông báo (message) */
+        .success-message,
+        .error-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="product-container">
+
+        {% if messages %}
+        {% for message in messages %}
+        <p class="{% if message.tags %}{{ message.tags }}{% endif %}-message">
+            {{ message }}
+        </p>
+        {% endfor %}
+        {% endif %}
+
+        <a href="/"> &lt; Quay lại trang chủ</a>
+        <a href="{% url 'cart_view' %}" style="margin-left: 20px;">Xem Giỏ Hàng</a>
+
+        <h1>{{ product.name }}</h1>
+        <img src="{{ product.image }}" alt="{{ product.name }}">
+
+        <h2>Giá: {{ product.price }} VNĐ</h2>
+        <h3>Mô tả chi tiết:</h3>
+        <p>{{ product.description }}</p>
+        <p>Số lượng còn lại: {{ product.stock }}</p>
+
+        {% if product.stock > 0 %}
+        <form action="{% url 'add_to_cart' product.id %}" method="POST">
+            {% csrf_token %}
+            <label for="quantity">Số lượng:</label>
+            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" style="width: 60px;">
+
+            <button type="submit" name="action" value="add_to_cart"
+                style="padding: 10px 15px; font-size: 16px; cursor: pointer;">
+                Thêm vào giỏ hàng
+            </button>
+        </form>
+        {% else %}
+        <p style="color: red; font-weight: bold;">Sản phẩm này đã hết hàng.</p>
+        {% endif %}
+
+        <hr style="margin: 30px 0;">
+
+        {% if user.is_authenticated %}
+        {% if can_review %}
+        <h3>Viết đánh giá của bạn</h3>
+        <form action="{% url 'product_detail' product.id %}" method="POST">
+            {% csrf_token %}
+            <label for="rating">Xếp hạng:</label>
+            <select name="rating" required>
+                <option value="">-- Chọn sao --</option>
+                <option value="5">5 sao (Rất tốt)</option>
+                <option value="4">4 sao (Tốt)</option>
+                <option value="3">3 sao (Bình thường)</option>
+                <option value="2">2 sao (Tệ)</option>
+                <option value="1">1 sao (Rất tệ)</option>
+            </select>
+            <br><br>
+            <label for="comment">Bình luận (tùy chọn):</label><br>
+            <textarea name="comment" rows="4" style="width: 90%;"></textarea>
+            <br><br>
+            <button type="submit" name="action" value="submit_review">Gửi đánh giá</button>
+        </form>
+        {% else %}
+        <p><i>{{ review_message }}</i></p> {% endif %}
+        {% else %}
+        <p><a href="{% url 'login' %}?next={{ request.path }}">Đăng nhập</a> để viết đánh giá.</p>
+        {% endif %}
+
+        <hr style="margin: 30px 0;">
+
+        <h3>Đánh giá từ khách hàng ({{ reviews.count }})</h3>
+
+        {% if average_rating %}
+        <p><strong>Điểm trung bình: {{ average_rating|floatformat:1 }}/5.0</strong></p>
+        {% endif %}
+
+        {% if reviews %}
+        {% for review in reviews %}
+        <div class="review" style="border-bottom: 1px solid #eee; margin-bottom: 15px; padding-bottom: 15px;">
+            <p>
+                <strong>{{ review.user.username }}</strong> -
+                <span style="color: gold;">{{ review.rating }} sao</span> -
+                <small>{{ review.created_at|date:"d/m/Y H:i" }}</small>
+            </p>
+            {% if review.comment %}
+            <p>{{ review.comment }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>

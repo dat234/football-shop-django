@@ -1,0 +1,42 @@
+{% extends "admin/base_site.html" %} {% load humanize %} {% block content %} <h1>Thống kê Cửa hàng</h1> 
+
+<div style="display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap;">
+
+    <div style="border: 1px solid #ccc; padding: 20px; flex: 1; min-width: 250px; background-color: #f9f9f9; border-radius: 5px;">
+        <h2>Doanh thu (7 ngày qua)</h2>
+        <p style="font-size: 24px; font-weight: bold; color: #28a745;">
+            {{ revenue_last_7_days|floatformat:0|intcomma }} VNĐ 
+        </p>
+        <small>(Đơn hàng đã hoàn thành)</small>
+    </div>
+
+    <div style="border: 1px solid #ccc; padding: 20px; flex: 1; min-width: 250px; background-color: #f9f9f9; border-radius: 5px;">
+        <h2>Đơn hàng mới</h2>
+        <p style="font-size: 24px; font-weight: bold; color: #007bff;">
+            {{ new_orders_count }}
+        </p>
+        <small>(Trạng thái "Mới")</small> <br>
+        <a href="/admin/store/order/?status__exact=Mới" style="margin-top: 10px; display: inline-block;">Xem danh sách</a> 
+    </div>
+
+    </div>
+
+<div style="margin-top: 30px; border: 1px solid #ccc; padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+    <h2>Top 5 Sản phẩm Bán chạy nhất</h2>
+    {% if top_products %}
+        <ol style="padding-left: 20px;">
+            {% for item in top_products %}
+                <li style="margin-bottom: 8px;">
+                    <a href="/admin/store/product/{{ item.product__id }}/change/">
+                        <strong>{{ item.product__name }}</strong>
+                    </a> 
+                    - Đã bán: {{ item.total_sold }}
+                </li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>Chưa có dữ liệu đơn hàng hoàn thành để thống kê.</p>
+    {% endif %}
+</div>
+
+{% endblock %} ```

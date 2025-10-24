@@ -1,0 +1,70 @@
+{% load math_filters %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết Đơn hàng #{{ order.id }}</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .order-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .order-table th, .order-table td { border: 1px solid #ccc; padding: 10px; }
+        .review-link { font-size: 0.9em; margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <a href="{% url 'order_history' %}"> &lt; Quay lại Lịch sử đơn hàng</a>
+    <h1>Chi tiết Đơn hàng #{{ order.id }}</h1>
+
+    <p><strong>Trạng thái:</strong> {{ order.status }}</p>
+
+    <h3>Thông tin người nhận</h3>
+    <p>
+        <strong>Tên:</strong> {{ order.full_name }}<br>
+        <strong>Email:</strong> {{ order.email }}<br>
+        <strong>SĐT:</strong> {{ order.phone }}<br>
+        <strong>Địa chỉ:</strong> {{ order.address }}<br>
+        <strong>Ngày đặt:</strong> {{ order.created_at }}
+    </p>
+
+    <h3>Các sản phẩm đã mua</h3>
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá tại lúc mua</th>
+                <th>Thành tiền</th>
+                {% if order.status == 'Hoàn thành' %}
+                    <th>Đánh giá</th> {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price_at_purchase }} VNĐ</td>
+                    <td>{{ item.quantity|mul:item.price_at_purchase }} VNĐ</td>
+                    
+                    {% if order.status == 'Hoàn thành' %}
+                        <td>
+                            {% if item.id in item_review_status %} {% if item_review_status|get_item:item.id %}
+                                    <i>(Đã đánh giá)</i>
+                                {% else %}
+                                    <a href="{% url 'product_detail' item.product.id %}" class="review-link">
+                                        Viết đánh giá
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                    </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <h2 style="text-align: right; margin-top: 20px;">
+        Tổng cộng: {{ order.final_price }} VNĐ </h2>
+
+    {% load template_extras %} 
+</body>
+</html>

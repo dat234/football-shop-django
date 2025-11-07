@@ -1,0 +1,347 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =================================== */
+/* GLOBAL & BODY
+/* =================================== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f9fafb; /* Nền xám nhạt giống landing page */
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* =================================== */
+/* SHOP LAYOUT
+/* =================================== */
+.shop-container {
+    display: grid;
+    grid-template-columns: 280px 1fr; /* Sidebar 280px, content tự lấp đầy */
+    gap: 40px;
+    max-width: 1700px; /* Giống max-width của header */
+    margin: 40px auto;
+    padding: 0 30px;
+}
+
+/* =================================== */
+/* SIDEBAR (FILTERS & SORT)
+/* =================================== */
+.sidebar {
+    position: sticky;
+    top: 110px; /* Dưới header (header ~ 72px + 40px margin) */
+    align-self: start; /* Giúp sidebar "dính" lại khi cuộn */
+}
+
+.filter-group {
+    background: #FFFFFF;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.filter-group strong {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    display: block;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.filter-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-group li a {
+    text-decoration: none;
+    color: #666;
+    font-weight: 500;
+    font-size: 0.95rem;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.filter-group li a:hover {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+    transform: translateX(5px);
+}
+
+.filter-group li a.active {
+    background: linear-gradient(135deg, #10B981, #06B6D4);
+    color: #FFFFFF;
+    font-weight: 600;
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+    transform: translateX(0);
+}
+
+/* =================================== */
+/* MAIN CONTENT (SEARCH, PRODUCTS)
+/* =================================== */
+
+.search-form {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 30px;
+    align-items: stretch; /* Giúp input và button cao bằng nhau */
+}
+
+.search-form input[type="text"] {
+    flex-grow: 1;
+    padding: 0 25px;
+    height: 50px;
+    font-size: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px 0 0 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    outline: none;
+    box-sizing: border-box; /* Quan trọng */
+}
+
+.search-form .btn-primary {
+    border-radius: 0 10px 10px 0;
+    height: 50px;
+    padding: 0 30px;
+    font-size: 1rem;
+    border: none;
+    display: flex;              /* Căn giữa text */
+    align-items: center;        /* Căn giữa theo chiều dọc */
+    justify-content: center;
+    box-sizing: border-box;     /* Đồng bộ box model với input */
+    line-height: normal;        /* Tránh lệch chiều cao */
+}
+
+/* Xóa hiệu ứng hover nhấc lên */
+.search-form .btn-primary:hover {
+    transform: none;
+}
+
+
+
+/* --- Results Header --- */
+.results-header {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* =================================== */
+/* PRODUCT LIST & CARDS
+/* =================================== */
+.product-list {
+    display: grid;
+    /* Tự động fill, mỗi item min 280px */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.no-products-found {
+    font-size: 1.1rem;
+    color: #666;
+    padding: 40px;
+    text-align: center;
+    grid-column: 1 / -1; /* Trải dài toàn bộ grid */
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Product Card (Style từ landing_page.css) --- */
+.product-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    border: 2px solid transparent;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    border-color: #10B981;
+    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2);
+}
+
+.product-card a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Giúp thẻ <a> lấp đầy card */
+}
+
+.product-image {
+    width: 100%;
+    height: 250px; /* Chiều cao cố định cho đồng bộ */
+    object-fit: cover;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.product-info {
+    padding: 25px 30px;
+    flex-grow: 1; /* Đẩy phần "Kho:" xuống dưới */
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-size: 1.25rem;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+    font-weight: 600;
+    /* Giới hạn 2 dòng */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 2.5em; /* 1.25rem * 2 */
+}
+
+.product-price {
+    color: #10B981;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 15px 0;
+}
+
+.product-stock {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: auto; /* Quan trọng: Đẩy xuống cuối cùng */
+}
+
+/* =================================== */
+/* PAGINATION
+/* =================================== */
+.pagination {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Giữ border-radius cho children */
+}
+
+.pagination li a,
+.pagination li span {
+    display: inline-block;
+    padding: 12px 18px;
+    text-decoration: none;
+    color: #666;
+    font-weight: 600;
+    border-right: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+}
+
+.pagination li:last-child a,
+.pagination li:last-child span {
+    border-right: none;
+}
+
+.pagination li a:hover {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+}
+
+.pagination li span.current {
+    background: linear-gradient(135deg, #10B981, #06B6D4);
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.pagination li span.disabled {
+    color: #ccc;
+    background: #f9f9f9;
+}
+
+
+/* =================================== */
+/* RESPONSIVE
+/* =================================== */
+@media (max-width: 1024px) {
+    .shop-container {
+        grid-template-columns: 240px 1fr; /* Thu nhỏ sidebar */
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .shop-container {
+        grid-template-columns: 1fr; /* Stack sidebar và content */
+        gap: 30px;
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+    
+    .sidebar {
+        position: static; /* Hủy sticky trên mobile */
+        top: 0;
+    }
+
+    .product-list {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .results-header {
+        font-size: 1.5rem;
+    }
+
+    /* Stack search form trên mobile */
+    .search-form {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .search-form input[type="text"] {
+        border-radius: 10px; /* Bo góc đầy đủ */
+    }
+    .search-form .btn-primary {
+        border-radius: 10px; /* Bo góc đầy đủ */
+        height: 45px;
+    }
+
+    /* Thu nhỏ pagination */
+    .pagination li a,
+    .pagination li span {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+     .product-list {
+        grid-template-columns: repeat(1, 1fr); /* 1 cột */
+        gap: 20px;
+    }
+    
+    .product-image {
+        height: 200px;
+    }
+}

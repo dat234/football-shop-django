@@ -1,98 +1,103 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giỏ hàng của bạn</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 20px;
-        }
 
-        .cart-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .cart-table th,
-        .cart-table td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-        }
-
-        .cart-table img {
-            width: 80px;
-            height: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/cart.css' %}">
 </head>
 
 <body>
-    {% if messages %}
-        <ul class="messages" style="list-style: none; padding: 0;">
-            {% for message in messages %}
-                <li style="padding: 10px; margin: 10px 0; 
-                           background-color: #d4edda; color: #155724; 
-                           border: 1px solid #c3e6cb; border-radius: 5px;">
-                    {{ message }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    <h1>Giỏ hàng của bạn</h1>
+    {% include "layout/header.html" %}
 
-    <a href="/"> &lt; Tiếp tục mua sắm</a>
-    <hr>
+    <main class="cart-page">
+        <div class="cart-container">
 
-    {% if cart_items %}
-    <table class="cart-table">
-        <thead>
-            <tr>
-                <th>Sản phẩm</th>
-                <th>Tên</th>
-                <th>Giá</th>
-                <th>Số lượng</th>
-                <th>Thành tiền</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in cart_items %}
-            <tr>
-                <td>
-                    <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
-                </td>
-                <td>{{ item.product.name }}</td>
-                <td>{{ item.product.price }} VNĐ</td>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
 
-                <td>
-                    <form action="{% url 'update_cart' item.product.id %}" method="POST" style="display: flex;">
-                        {% csrf_token %}
-                        <input type="number" name="quantity" value="{{ item.quantity }}" min="0"
-                            max="{{ item.product.stock }}" style="width: 60px;">
+            {% if cart_items %}
+            
+            <div class="cart-header">
+                <h1>Giỏ hàng của bạn</h1>
+                <a href="{% url 'home' %}" class="btn-secondary continue-shopping-btn">&lt; Tiếp tục mua sắm</a>
+            </div>
 
-                        <button type="submit" style="margin-left: 5px;">Cập nhật</button>
-                    </form>
-                </td>
-                <td>{{ item.subtotal }} VNĐ</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <div class="cart-layout">
+                
+                <section class="cart-items-list">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
 
-    <h2>Tổng cộng: {{ total_price }} VNĐ</h2>
-<div style="text-align: right; margin-top: 20px;">
-    <a href="{% url 'checkout' %}">
-        <button style="padding: 15px 25px; font-size: 18px; background-color: green; color: white; cursor: pointer;">
-            Tiến hành Thanh toán
-        </button>
-    </a>
-</div>
-    {% else %}
-    <p>Giỏ hàng của bạn đang trống.</p>
-    {% endif %}
+                        <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td data-label="Ảnh" class="cart-product-img">
+                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
+                            </td>
+                            <td data-label="Sản phẩm" class="cart-product-info">
+                            <span class="product-name">{{ item.product.name }}</span>
+                            </td>
+                            <td data-label="Giá" class="product-price">{{ item.product.price|floatformat:0 }} VNĐ</td>
+                            <td data-label="Số lượng">
+                            <form action="{% url 'update_cart' item.product.id %}" method="POST" class="update-cart-form">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}">
+                                <button type="submit" class="update-cart-btn">Cập nhật</button>
+                            </form>
+                            </td>
+                            <td data-label="Thành tiền" class="product-subtotal">{{ item.subtotal|floatformat:0 }} VNĐ</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
 
+                <aside class="cart-summary">
+                    <h2>Thanh toán</h2>
+                    
+                    <div class="summary-row">
+                        <span class="label">Tổng cộng:</span>
+                        <span class="value">{{ total_price|floatformat:0 }} VNĐ</span>
+                    </div>
+
+                    <a href="{% url 'checkout' %}" class="btn-primary checkout-btn">
+                        Tiến hành Thanh toán
+                    </a>
+                </aside>
+
+            </div>
+
+            {% else %}
+            
+            <div class="cart-empty">
+                <p>Giỏ hàng của bạn đang trống.</p>
+                <a href="{% url 'home' %}" class="btn-primary">Bắt đầu mua sắm</a>
+            </div>
+            
+            {% endif %}
+
+        </div>
+    </main>
+
+    {% include "layout/footer.html" %}
 </body>
 
 </html>

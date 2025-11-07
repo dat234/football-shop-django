@@ -1,0 +1,40 @@
+{% load static %}
+<header class="header">
+    <div class="header-content">
+        <div class="header-left">
+            <a href="{% url 'home' %}" class="logo">
+                <img src="{% static 'image/soccer.svg' %}" alt="BODAH Logo" class="logo-img">
+                <span class="logo-text">BODAH</span>
+            </a>
+
+            <!-- <nav class="nav-links">
+                <a href="#male">Nam</a>
+                <a href="#female">Nữ</a>
+                <a href="#kid">Trẻ em</a>
+            </nav> -->
+        </div>
+
+        <div class="header-actions">
+            {% if user.is_authenticated %}
+                <span style="display: flex; align-items: center; gap: 8px;">
+                    Xin chào, <strong>{{ user.username }}</strong>!
+                    {% if user.is_staff %}
+                        <a href="/admin/" class="action-link action-admin">ADMIN</a>
+                    {% else %}
+                        <a href="{% url 'cart_view' %}" class="action-link">
+                            <img src="{% static 'image/cart_icon.svg' %}" alt="Cart" class="cart-img">
+                            Giỏ Hàng
+                        </a>
+                        <a href="{% url 'order_history' %}" class="action-link history">Lịch sử đơn hàng</a> 
+                    {% endif %}
+                </span>
+                
+                <a href="{% url 'logout' %}" class="btn-secondary">Đăng xuất</a>
+                
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-secondary">Đăng nhập</a>
+                <a href="{% url 'register' %}" class="btn-primary">Đăng ký</a>
+            {% endif %}
+        </div>
+    </div>
+</header>

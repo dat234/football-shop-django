@@ -1,70 +1,130 @@
-{% load math_filters %} <!DOCTYPE html>
-<html lang="en">
+{% load static %}
+{% load math_filters %}
+{% load template_extras %} 
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết Đơn hàng #{{ order.id }}</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; }
-        .order-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .order-table th, .order-table td { border: 1px solid #ccc; padding: 10px; }
-        .review-link { font-size: 0.9em; margin-left: 10px; }
-    </style>
+    
+    <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/user/order_detail.css' %}">
 </head>
 <body>
-    <a href="{% url 'order_history' %}"> &lt; Quay lại Lịch sử đơn hàng</a>
-    <h1>Chi tiết Đơn hàng #{{ order.id }}</h1>
+    {% include "layout/header.html" %}
 
-    <p><strong>Trạng thái:</strong> {{ order.status }}</p>
+    <main class="detail-page">
+        <div class="detail-container">
 
-    <h3>Thông tin người nhận</h3>
-    <p>
-        <strong>Tên:</strong> {{ order.full_name }}<br>
-        <strong>Email:</strong> {{ order.email }}<br>
-        <strong>SĐT:</strong> {{ order.phone }}<br>
-        <strong>Địa chỉ:</strong> {{ order.address }}<br>
-        <strong>Ngày đặt:</strong> {{ order.created_at }}
-    </p>
+            <div class="detail-header">
+                <h1>Chi tiết Đơn hàng #{{ order.id }}</h1>
+                <a href="{% url 'order_history' %}" class="back-link"> &lt; Quay lại Lịch sử đơn hàng</a>
+            </div>
 
-    <h3>Các sản phẩm đã mua</h3>
-    <table class="order-table">
-        <thead>
-            <tr>
-                <th>Sản phẩm</th>
-                <th>Số lượng</th>
-                <th>Giá tại lúc mua</th>
-                <th>Thành tiền</th>
-                {% if order.status == 'Hoàn thành' %}
-                    <th>Đánh giá</th> {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in order_items %}
-                <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.price_at_purchase }} VNĐ</td>
-                    <td>{{ item.quantity|mul:item.price_at_purchase }} VNĐ</td>
+            <div class="detail-layout">
+                
+                <div class="detail-info-column">
                     
-                    {% if order.status == 'Hoàn thành' %}
-                        <td>
-                            {% if item.id in item_review_status %} {% if item_review_status|get_item:item.id %}
-                                    <i>(Đã đánh giá)</i>
-                                {% else %}
-                                    <a href="{% url 'product_detail' item.product.id %}" class="review-link">
-                                        Viết đánh giá
-                                    </a>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                    {% endif %}
-                    </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-    <h2 style="text-align: right; margin-top: 20px;">
-        Tổng cộng: {{ order.final_price }} VNĐ </h2>
+                    <div class="detail-card">
+                        <h3>Thông tin chung</h3>
+                        <div class="info-group">
+                            <span class="info-label">Mã đơn hàng</span>
+                            <span class="info-value">#{{ order.id }}</span>
+                        </div>
+                        <div class="info-group">
+                            <span class="info-label">Ngày đặt</span>
+                            <span class="info-value">{{ order.created_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="info-group">
+                            <span class="info-label">Trạng thái</span>
+                            <span class="order-status 
+                                {% if order.status == 'Pending' %}pending
+                                {% elif order.status == 'Completed' %}completed
+                                {% elif order.status == 'Cancelled' %}cancelled
+                                {% endif %}">
+                                {{ order.status }}
+                            </span>
+                        </div>
+                    </div>
 
-    {% load template_extras %} 
+                    <div class="detail-card">
+                        <h3>Người nhận</h3>
+                        <div class="info-group">
+                            <span class="info-label">Họ và tên</span>
+                            <span class="info-value">{{ order.full_name }}</span>
+                        </div>
+                        <div class="info-group">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">{{ order.email }}</span>
+                        </div>
+                        <div class="info-group">
+                            <span class="info-label">Số điện thoại</span>
+                            <span class="info-value">{{ order.phone }}</span>
+                        </div>
+                        <div class="info-group">
+                            <span class="info-label">Địa chỉ</span>
+                            <span class="info-value">{{ order.address|linebreaksbr }}</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="detail-products-column">
+                    <div class="detail-card product-table-card">
+                        <h3>Sản phẩm đã mua</h3>
+                        
+                        <table class="product-table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Đơn giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                    {% if order.status == 'Completed' %} <th>Đánh giá</th> 
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                    <tr>
+                                        <td>{{ item.product.name }}</td>
+                                        <td>{{ item.price_at_purchase|floatformat:0 }} VNĐ</td>
+                                        <td>x{{ item.quantity }}</td>
+                                        <td>{{ item.quantity|mul:item.price_at_purchase|floatformat:0 }} VNĐ</td>
+                                        
+                                        {% if order.status == 'Completed' %}
+                                            <td>
+                                                {% if item.id in item_review_status %} 
+                                                    {% if item_review_status|get_item:item.id %}
+                                                        <span class="reviewed-text">Let's gooo<i class="fas fa-check-circle"></i> (Đã đánh giá)</span>
+                                                    {% else %}
+                                                        <a href="{% url 'product_detail' item.product.id %}" class="review-link">
+                                                            Viết đánh giá
+                                                        </a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <div class="order-total">
+                            <span class="label">Tổng cộng:</span>
+                            <span class="value">{{ order.final_price|floatformat:0 }} VNĐ</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    {% include "layout/footer.html" %}
 </body>
 </html>

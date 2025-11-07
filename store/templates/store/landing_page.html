@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BODAH - Website Bán Đồ Bóng Đá</title>
+
+    <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/landing_page.css' %}">
+</head>
+<body>
+    {% include "layout/header.html" %}
+
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1 class="tagline">BODAH - Nhóm 19</h1>
+            <p class="subtitle">Đá bóng đừng để bóng đá - Vì đàn ông là phải mạnh mẽ trên sân</p>
+        </div>
+        <div class="scroll-indicator" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">
+            ↓
+        </div>
+    </section>
+
+    <section id="products" class="products-section">
+        <div class="section-content">
+            <h2 class="section-title">Sản phẩm nổi bật</h2>
+            <p class="section-subtitle">Khám phá những mặt hàng hot nhất</V>
+            
+            <div class="products-carousel">
+                {% for product in featured_products %}
+                <div class="product-card">
+                    <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: inherit;">
+                        <img class="product-image" 
+                            src="{{ product.image_url }}" 
+                            alt="{{ product.name }}"
+                            style="width: 100%; object-fit: cover;">
+                        <div class="product-info">
+                            <h3 class="product-name">{{ product.name }}</h3>
+                            <p class="product-price">{{ product.price|floatformat:0 }}đ</p>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section id="stats" class="stats-section">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-number">1,000+</div>
+                <div class="stat-label">Sản phẩm</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">5,000+</div>
+                <div class="stat-label">Khách hàng</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">20,000+</div>
+                <div class="stat-label">Đơn hàng/năm</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Hỗ trợ</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="section team-section">
+        <div class="section-content">
+            <h2 class="section-title">Đội ngũ phát triển</h2>
+            <p class="section-subtitle">Ba con người đầy nhiệt huyết đằng sau dự án</p>
+            
+            <div class="team-grid">
+                <div class="team-card">
+                    <img class="member-photo" src="/static/image/ava_vqb.png" alt="Vũ Quốc Bảo">
+                    <h3 class="member-name">Vũ Quốc Bảo</h3>
+                    <p class="student-id">MSSV: 20225694</p>
+                    <div class="member-social">
+                        <a href="https://www.facebook.com/quocbao.vu.25" target="_blank">
+                            <img class="social-link" src="static/image/fb_logo.png" alt="Facebook-logo">
+                        </a>
+                        <a href="https://www.instagram.com/byllkoy259_/" target="_blank">
+                            <img class="social-link" src="static/image/ig_logo.png" alt="Instagram-logo">
+                        </a>                 
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <img class="member-photo" src="/static/image/ava_vtd.png" alt="Vũ Thành Đạt">
+                    <h3 class="member-name">Vũ Thành Đạt</h3>
+                    <p class="student-id">MSSV: 20225607</p>
+                    <div class="member-social">
+                        <a href="http://facebook.com/vu.thanh.at.57411" target="_blank">
+                            <img class="social-link" src="static/image/fb_logo.png" alt="Facebook-logo">
+                        </a>
+                        <a href="#" target="_blank">
+                            <img class="social-link" src="static/image/ig_logo.png" alt="Instagram-logo">
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="team-card">
+                    <img class="member-photo" src="/static/image/ava_tqh.png" alt="Trịnh Quốc Hoàng">
+                    <h3 class="member-name">Trịnh Quốc Hoàng</h3>
+                    <p class="student-id">MSSV: 20225629</p>
+                    <div class="member-social">
+                        <a href="https://www.facebook.com/gnaoh69" target="_blank">
+                            <img class="social-link" src="static/image/fb_logo.png" alt="Facebook-logo">
+                        </a>
+                        <a href="https://www.instagram.com/hoang.trnh/" target="_blank">
+                            <img class="social-link" src="static/image/ig_logo.png" alt="Instagram-logo">
+                        </a> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="cta-section">
+        <div class="cta-bg"></div>
+        <div class="cta-content">
+            <h2 class="section-title">Sẵn sàng trải nghiệm?</h2>
+            <p class="section-subtitle">Khám phá website bán đồ bóng đá hiện đại nhất</p>
+            <a href="{% url 'register' %}" class="cta-button">Đăng ký ngay</a>
+        </div>
+    </section>
+
+    {% include "layout/footer.html" %}
+</body>
+</html>

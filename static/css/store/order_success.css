@@ -1,0 +1,104 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =================================== */
+/* GLOBAL & BODY
+/* =================================== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f9fafb; /* Nền xám nhạt */
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+    
+    /* Thiết lập để căn giữa nội dung */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* =================================== */
+/* PAGE LAYOUT
+/* =================================== */
+.success-page {
+    flex-grow: 1; /* Đẩy footer xuống dưới */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 30px;
+}
+
+.success-container {
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    padding: 50px 60px;
+    text-align: center;
+    
+    /* FIX: Tăng chiều rộng để h1 không bị xuống dòng */
+    max-width: 580px; 
+    
+    width: 100%;
+}
+
+.success-icon {
+    margin-bottom: 20px;
+}
+
+.success-icon img {
+    max-width: 100px; /* Đặt kích thước tối đa cho ảnh */
+    height: auto;
+    display: block; /* Để căn giữa dễ hơn */
+    margin: 0 auto; /* Căn giữa hình ảnh */
+}
+
+.success-container h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 15px 0;
+}
+
+.success-container p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Nút "Quay về trang chủ" */
+.success-container .btn-primary {
+    display: inline-block;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #10B981, #06B6D4);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.4s ease;
+    box-shadow: 0 6px 25px rgba(16, 185, 129, 0.4);
+    border: none;
+}
+
+.success-container .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(16, 185, 129, 0.5);
+}
+
+/* =================================== */
+/* RESPONSIVE
+/* =================================== */
+@media (max-width: 768px) {
+    .success-container {
+        padding: 40px 25px;
+    }
+    .success-container h1 {
+        font-size: 1.5rem;
+    }
+    .success-container p {
+        font-size: 1rem;
+    }
+}

@@ -6,47 +6,39 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from store.models import Order, OrderItem, Review # Import models từ app 'store'
 # (Không cần import messages ở đây nữa nếu không dùng)
+from users.templates.users.forms import VietnameseAuthenticationForm, VietnameseUserCreationForm
 
 # --- Views Đăng ký ---
 def register_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = VietnameseUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home') # Chuyển về trang chủ sau khi đăng ký
+            return redirect('home')
     else:
-        form = UserCreationForm()
+        form = VietnameseUserCreationForm()
     return render(request, 'users/register.html', {'form': form})
 
 # --- Views Đăng nhập ---
 def login_view(request):
-    error_message = None
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = VietnameseAuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                # Chuyển hướng đến trang người dùng muốn vào trước đó (nếu có), nếu không về home
-                next_url = request.GET.get('next', '/')
-                return redirect(next_url)
-            else:
-                error_message = "Username hoặc mật khẩu không đúng."
-        else:
-            # Lấy lỗi cụ thể từ form nếu có
-            error_message = form.errors.get('__all__', "Username hoặc mật khẩu không đúng.")
+            user = form.get_user()
+            login(request, user)
+            next_url = request.GET.get('next', 'home')
+            return redirect(next_url)
     else:
-        form = AuthenticationForm()
-    return render(request, 'users/login.html', {'form': form, 'error_message': error_message})
+        form = VietnameseAuthenticationForm()
+    
+    return render(request, 'users/login.html', {'form': form})
 
 # --- Views Đăng xuất (QUAN TRỌNG) ---
 def logout_view(request):
     logout(request) # Gọi hàm logout chuẩn của Django
     # (Không cần thêm message ở đây, cứ về home là đủ)
-    return redirect('home') # Chuyển về trang chủ
+    return redirect('/') # Chuyển về trang chủ
 
 # --- View Lịch sử Đơn hàng ---
 @login_required

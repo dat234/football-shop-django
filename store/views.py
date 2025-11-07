@@ -393,3 +393,20 @@ def checkout(request):
 # -----------------------------------------------------------------------------
 def order_success(request):
     return render(request, 'store/order_success.html')
+
+# -----------------------------------------------------------------------------
+# GĐ 0: Trang Giới thiệu
+# -----------------------------------------------------------------------------
+def landing_page(request):
+    """
+    Render trang landing page (demo.html).
+    Chúng ta cũng lấy 4 sản phẩm mới nhất để hiển thị ở
+    phần "Sản phẩm nổi bật".
+    """
+    # Lấy 4 sản phẩm mới nhất (hoặc nổi bật)
+    featured_products = Product.objects.all().order_by('-id')[:4]
+    
+    context = {
+        'featured_products': featured_products
+    }
+    return render(request, 'store/landing_page.html', context)

@@ -1,201 +1,139 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Bóng Đá</title>
-    
-    <style>
-        body { font-family: sans-serif; }
-        .product-list { display: flex; flex-wrap: wrap; gap: 20px; }
-        .product-item { border: 1px solid #ccc; border-radius: 8px; padding: 10px; width: 200px; }
-        .product-item img { width: 100%; height: auto; }
-        
-        /* CSS cho bộ lọc danh mục & Sắp xếp */
-        .category-filter ul, .sorting-filter ul { 
-            list-style: none; padding: 0; display: flex; gap: 15px; margin-top: 5px; flex-wrap: wrap; 
-        }
-        
-        /* CSS cho link Danh mục */
-        .category-link { text-decoration: none; color: black; font-weight: normal; }
-        .category-link.active { font-weight: bold; color: darkblue; }
-        
-        /* CSS MỚI CHO LINK SẮP XẾP */
-        .sort-link { 
-            text-decoration: none; 
-            color: black; 
-            font-weight: normal; 
-        }
-        .sort-link.active { 
-            font-weight: bold; 
-            color: darkblue; 
-        }
+    <title>BODAH - Website Bán Đồ Bóng Đá</title>
 
-        /* CSS MỚI CHO PHÂN TRANG */
-        .pagination {
-            margin-top: 30px;
-            text-align: center; /* Căn giữa thanh phân trang */
-        }
-        .pagination ul {
-            list-style: none; 
-            padding: 0; 
-            display: inline-flex; /* Xếp các nút trên 1 hàng */
-        }
-        .pagination li {
-            margin: 0 2px;
-        }
-        .pagination a, .pagination span {
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            text-decoration: none;
-            color: black;
-            display: block; /* Giúp nút đẹp hơn */
-        }
-        .pagination .current {
-            background-color: #007bff; /* Màu xanh cho trang hiện tại */
-            color: white;
-            border-color: #007bff;
-        }
-        .pagination .disabled {
-            color: #ccc;
-            border-color: #ccc;
-        }
-    </style>
-    </head>
+    <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/home.css' %}">
+</head>
 <body>
+    {% include "layout/header.html" %}
 
-    <div style="text-align: right; padding: 10px; background-color: #f0f0f0;">
-        {% if user.is_authenticated %}
-            Xin chào, <strong>{{ user.username }}</strong>!
-            {% if user.is_staff %}
-                <a href="/admin/" style="margin-left: 15px; color: red; font-weight: bold;">(TRANG QUẢN TRỊ)</a>
-            {% else %}
-                <a href="{% url 'order_history' %}" style="margin-left: 15px;">(Lịch sử đơn hàng)</a> 
-            {% endif %}
-            <a href="{% url 'logout' %}" style="margin-left: 15px;">Đăng xuất</a>
-        {% else %}
-            <a href="{% url 'login' %}">Đăng nhập</a>
-            <a href="{% url 'register' %}" style="margin-left: 15px;">Đăng ký</a>
-        {% endif %}
-    </div>
+    <main class="shop-page">
+        <div class="shop-container">
 
-    <h1>Chào mừng đến với Shop Bóng Đá!</h1>
-    <a href="{% url 'cart_view' %}">Xem Giỏ Hàng</a>
-
-    <div style="margin: 20px 0;">
-        <form action="{% url 'home' %}" method="GET">
-            <input type="text" name="q" placeholder="Tìm kiếm sản phẩm..." style="width: 300px; padding: 8px;" value="{{ search_query|default:'' }}">
-            <button type="submit">Tìm</button>
-        </form>
-    </div>
-
-    <div class="category-filter" style="margin-bottom: 20px;">
-        <strong>Lọc theo danh mục:</strong>
-        <ul>
-            <li>
-                <a href="{% url 'home' %}" 
-                   class="category-link {% if not current_category_id %}active{% endif %}">
-                   Tất cả sản phẩm
-                </a>
-            </li>
-            {% for cat in all_categories %}
-            <li>
-                <a href="?category={{ cat.id }}{% if search_query %}&q={{ search_query }}{% endif %}" 
-                   class="category-link {% if current_category_id == cat.id %}active{% endif %}">
-                    {{ cat.name }}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <div class="sorting-filter" style="margin-bottom: 20px;">
-        <strong>Sắp xếp theo:</strong>
-        <ul>
-            <li>
-                <a href="?{{ query_string }}&sort=-id"
-                   class="sort-link {% if current_sort == '-id' %}active{% endif %}">
-                   Mới nhất
-                </a>
-            </li>
-            <li>
-                <a href="?{{ query_string }}&sort=price_asc"
-                   class="sort-link {% if current_sort == 'price_asc' %}active{% endif %}">
-                   Giá: Tăng dần
-                </a>
-            </li>
-            <li>
-                <a href="?{{ query_string }}&sort=price_desc"
-                   class="sort-link {% if current_sort == 'price_desc' %}active{% endif %}">
-                   Giá: Giảm dần
-                </a>
-            </li>
-        </ul>
-    </div>
-    {% if search_query %}
-        <h2>Kết quả tìm kiếm cho: "{{ search_query }}"</h2>
-    {% elif current_category_id %}
-        <h2>Sản phẩm</h2>
-    {% else %}
-        <h2>Sản phẩm của chúng tôi</h2>
-    {% endif %}
-
-    <div class="product-list">
-        {% for product in page_obj %}
-            <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: black;">
-                <div class="product-item">
-                    <img src="{{ product.image }}" alt="{{ product.name }}">
-                    <h3>{{ product.name }}</h3>
-                    <p>Giá: {{ product.price }} VNĐ</p>
-                    <p>Kho: {{ product.stock }}</p>
+            <aside class="sidebar">
+                <div class="filter-group">
+                    <strong>Lọc theo danh mục:</strong>
+                    <ul>
+                        <li>
+                            <a href="{% url 'home' %}" 
+                               class="{% if not current_category_id %}active{% endif %}">
+                                Tất cả sản phẩm
+                            </a>
+                        </li>
+                        {% for cat in all_categories %}
+                        <li>
+                            <a href="?category={{ cat.id }}{% if search_query %}&q={{ search_query }}{% endif %}" 
+                               class="{% if current_category_id == cat.id %}active{% endif %}">
+                                {{ cat.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </div>
-            </a>
-        {% empty %}
-            <p>Không tìm thấy sản phẩm nào phù hợp.</p>
-        {% endfor %}
-    </div>
 
-    <div class="pagination">
-        {% if page_obj.has_other_pages %}
-            <ul>
-                
-                <li>
-                    <a href="?{{ query_string }}&page=1">&laquo;&laquo;</a>
-                </li>
-                
-                {% if page_obj.has_previous %}
-                    <li>
-                        <a href="?{{ query_string }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
-                    </li>
-                {% else %}
-                     <li><span class="disabled">&laquo;</span></li>
-                {% endif %}
+                <div class="filter-group">
+                    <strong>Sắp xếp theo:</strong>
+                    <ul>
+                        <li>
+                            <a href="?{{ query_string }}&sort=-id"
+                               class="{% if current_sort == '-id' %}active{% endif %}">
+                                Mới nhất
+                            </a>
+                        </li>
+                        <li>
+                            <a href="?{{ query_string }}&sort=price_asc"
+                               class="{% if current_sort == 'price_asc' %}active{% endif %}">
+                                Giá: Tăng dần
+                            </a>
+                        </li>
+                        <li>
+                            <a href="?{{ query_string }}&sort=price_desc"
+                               class="{% if current_sort == 'price_desc' %}active{% endif %}">
+                                Giá: Giảm dần
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </aside> 
 
-                {% for num in page_obj.paginator.get_elided_page_range %}
-                    {% if page_obj.number == num %}
-                        <li><span class="current">{{ num }}</span></li>
-                    {% elif num == page_obj.paginator.ELLIPSIS %}
-                        <li><span class="disabled">{{ num }}</span></li>
+            <section class="main-content">
+
+                <form action="{% url 'home' %}" method="GET" class="search-form">
+                    <input type="text" name="q" placeholder="Tìm áo đấu, giày, bóng..." value="{{ search_query|default:'' }}">
+                    <button type="submit" class="btn-primary">Tìm kiếm</button>
+                </form>
+
+                <h2 class="results-header">
+                    {% if search_query %}
+                        Kết quả tìm kiếm cho: "{{ search_query }}"
+                    {% elif current_category_id %}
+                        Sản phẩm
                     {% else %}
-                        <li><a href="?{{ query_string }}&page={{ num }}">{{ num }}</a></li>
+                        Tất cả sản phẩm
                     {% endif %}
-                {% endfor %}
+                </h2>
 
-                {% if page_obj.has_next %}
-                    <li>
-                        <a href="?{{ query_string }}&page={{ page_obj.next_page_number }}">&raquo;</a>
-                    </li>
-                {% else %}
-                     <li><span class="disabled">&raquo;</span></li>
-                {% endif %}
-                
-                <li>
-                    <a href="?{{ query_string }}&page={{ page_obj.paginator.num_pages }}">&raquo;&raquo;</a>
-                </li>
-                
-            </ul>
-        {% endif %}
-    </div>
-    </body>
+                <div class="product-list">
+                    {% for product in page_obj %}
+                        <div class="product-card">
+                            <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: inherit;">
+                                <img class="product-image" 
+                                    src="{{ product.image.url|default:product.image }}" 
+                                    alt="{{ product.name }}">
+                                <div class="product-info">
+                                    <h3 class="product-name">{{ product.name }}</h3>
+                                    <p class="product-price">{{ product.price|floatformat:0 }} VNĐ</p>
+                                    <p class="product-stock">Kho: {{ product.stock }}</p>
+                                </div>
+                            </a>
+                        </div>
+                    {% empty %}
+                        <p class="no-products-found">Không tìm thấy sản phẩm nào phù hợp.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="pagination">
+                    {% if page_obj.has_other_pages %}
+                        <ul>
+                            <li><a href="?{{ query_string }}&page=1">&laquo;&laquo;</a></li>
+                            
+                            {% if page_obj.has_previous %}
+                                <li><a href="?{{ query_string }}&page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                                <li><span class="disabled">&laquo;</span></li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.get_elided_page_range %}
+                                {% if page_obj.number == num %}
+                                    <li><span class="current">{{ num }}</span></li>
+                                {% elif num == page_obj.paginator.ELLIPSIS %}
+                                    <li><span class="disabled">{{ num }}</span></li>
+                                {% else %}
+                                    <li><a href="?{{ query_string }}&page={{ num }}">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li><a href="?{{ query_string }}&page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                                <li><span class="disabled">&raquo;</span></li>
+                            {% endif %}
+                            
+                            <li><a href="?{{ query_string }}&page={{ page_obj.paginator.num_pages }}">&raquo;&raquo;</a></li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+            </section> 
+        </div>
+    </main> 
+        
+    {% include "layout/footer.html" %}
+</body>
 </html>

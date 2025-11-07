@@ -1,0 +1,211 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =================================== */
+/* GLOBAL & BODY
+/* =================================== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f9fafb;
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+    
+    /* Thiết lập để căn giữa nội dung */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative; /* Quan trọng để lớp phủ hoạt động */
+    overflow: hidden; /* Ngăn cuộn ngoài ý muốn */
+}
+
+/* =================================== */
+/* BACKGROUND IMAGE & OVERLAY
+/* =================================== */
+.bg-image-overlay {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+    background-image: url("https://www.shutterstock.com/shutterstock/videos/1030617992/thumb/1.jpg"); /* <-- THAY THẾ BẰNG ĐƯỜNG DẪN ẢNH CỦA BẠN */
+    background-size: cover;
+    background-position: center;
+    filter: blur(5px) brightness(0.7); /* Làm mờ và làm tối ảnh nền */
+    z-index: -1; /* Đặt phía dưới nội dung */
+    transition: all 0.5s ease;
+}
+
+/* =================================== */
+/* AUTH PAGE LAYOUT
+/* =================================== */
+.auth-page {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    z-index: 1; /* Đảm bảo nội dung nằm trên lớp phủ */
+}
+
+.auth-container {
+    background: rgba(255, 255, 255, 0.95); /* Nền trắng hơi trong suốt */
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2); /* Bóng rõ hơn */
+    padding: 40px 50px;
+    width: 100%;
+    max-width: 450px;
+    transition: all 0.3s ease;
+}
+
+/* --- Header (Tiêu đề) --- */
+.auth-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.auth-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+    background: linear-gradient(135deg, #2c3e50, #334155);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-header p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* =================================== */
+/* FORM STYLES
+/* =================================== */
+.auth-form .form-group { /* Sửa p thành form-group */
+    margin-bottom: 20px;
+}
+
+.auth-form label {
+    display: block;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    background-color: #fcfcfc;
+}
+
+.auth-form input:focus {
+    border-color: #10B981;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    outline: none;
+}
+
+.helptext {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Lỗi riêng cho từng trường */
+.auth-form .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0 0;
+    color: #ef4444;
+    font-size: 0.85rem; /* Kích thước nhỏ hơn */
+    font-weight: 500;
+}
+
+/* =================================== */
+/* BUTTONS & LINKS
+/* =================================== */
+.auth-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #10B981, #06B6D4);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid #f0f0f0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.auth-footer a {
+    color: #10B981;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.auth-footer a:hover {
+    color: #06B6D4;
+    text-decoration: underline;
+}
+
+/* =================================== */
+/* ERROR MESSAGES (General form error)
+/* =================================== */
+.form-error {
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: #ef4444;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+.form-error::before {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+/* =================================== */
+/* RESPONSIVE
+/* =================================== */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 30px 25px;
+    }
+    .auth-header h1 {
+        font-size: 1.75rem;
+    }
+}

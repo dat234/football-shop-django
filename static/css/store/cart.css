@@ -1,0 +1,354 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =================================== */
+/* GLOBAL & BODY
+/* =================================== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f9fafb; /* Nền xám nhạt */
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* =================================== */
+/* CART LAYOUT
+/* =================================== */
+.cart-page {
+    padding-bottom: 80px; /* Thêm khoảng trống trước footer */
+}
+
+.cart-container {
+    max-width: 1700px;
+    margin: 40px auto;
+    padding: 0 30px;
+}
+
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* Cho responsive */
+    gap: 20px;
+}
+
+.cart-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+}
+
+/* Nút "Tiếp tục mua sắm" kế thừa từ .btn-secondary trong header.css */
+.continue-shopping-btn {
+    text-decoration: none;
+    display: inline-block;
+    padding: 0 22px;
+    height: 42px;
+    line-height: 38px; /* height - 2*border */
+    font-size: 0.95rem;
+
+    /* FIX: Thêm bo góc và transition bị thiếu */
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+
+/* Bố cục 2 cột */
+.cart-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+/* =================================== */
+/* LEFT COLUMN (ITEMS LIST)
+/* =================================== */
+.cart-items-list {
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Giữ table bên trong */
+}
+
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cart-table thead th {
+    text-align: left;
+    padding: 15px 25px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    background-color: #fdfdfd;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* FIX: Thêm width cho các cột để căn chỉnh thẳng hàng */
+.cart-table thead th:nth-child(1) { width: 30%; }  /* Ảnh sản phẩm */
+.cart-table thead th:nth-child(2) { width: 20%; }  /* Tên sản phẩm */
+.cart-table thead th:nth-child(3) { width: 20%; }  /* Giá */
+.cart-table thead th:nth-child(4) { width: 15%; }  /* Số lượng */
+.cart-table thead th:nth-child(5) { width: 15%; }  /* Thành tiền */
+
+.cart-table tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+.cart-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.cart-table td {
+    padding: 20px 25px;
+    vertical-align: middle;
+}
+
+/* --- Cell Sản phẩm (Ảnh + Tên) --- */
+.cart-product-cell {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.cart-product-cell img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+}
+
+.cart-product-cell .product-name {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+/* --- Cell Giá & Thành tiền --- */
+.product-price, .product-subtotal {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.05rem;
+}
+
+/* --- Cell Số lượng --- */
+.update-cart-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.update-cart-form input[type="number"] {
+    width: 65px;
+    height: 42px;
+    padding: 0 10px;
+    text-align: center;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.update-cart-form input[type="number"]:focus {
+    border-color: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    outline: none;
+}
+
+.update-cart-btn {
+    height: 42px;
+    padding: 0 15px;
+    border: none;
+    background: #f0f4f8;
+    color: #334155;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.update-cart-btn:hover {
+    background: #e1e7ec;
+    transform: translateY(-2px);
+}
+
+
+/* =================================== */
+/* RIGHT COLUMN (SUMMARY)
+/* =================================== */
+.cart-summary {
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    position: sticky;
+    top: 110px; /* Dính lại khi cuộn (Header 70px + Margin 40px) */
+}
+
+.cart-summary h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 25px 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.summary-row .label {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.summary-row .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* Nút Checkout kế thừa từ .btn-primary */
+.checkout-btn {
+    display: block; /* Nút chiếm 100% */
+    width: 100%;
+    text-align: center;
+    font-size: 1.1rem;
+    padding: 14px 22px;
+    height: auto; /* Ghi đè height cố định */
+
+    /* FIX: Thêm các style bị thiếu từ header.css */
+    text-decoration: none;  /* Bỏ gạch chân */
+    border-radius: 8px;     /* Bo góc mềm mại */
+    transition: all 0.3s ease; /* Hiệu ứng mượt mà */
+}
+
+/* =================================== */
+/* EMPTY CART & MESSAGES
+/* =================================== */
+.cart-empty {
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    padding: 80px 40px;
+    text-align: center;
+}
+
+.cart-empty p {
+    font-size: 1.25rem;
+    color: #334155;
+    margin: 0 0 30px 0;
+}
+
+/* Nút Mua sắm ngay kế thừa .btn-primary */
+.cart-empty .btn-primary {
+    font-size: 1.1rem;
+    padding: 14px 25px;
+    height: auto;
+    
+    /* FIX: Thêm các style bị thiếu từ header.css */
+    text-decoration: none;  /* Bỏ gạch chân */
+    border-radius: 8px;     /* Bo góc mềm mại */
+    transition: all 0.3s ease; /* Hiệu ứng mượt mà */
+}
+
+.messages {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+}
+.messages li {
+    padding: 15px 20px;
+    margin: 10px 0;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* =================================== */
+/* RESPONSIVE
+/* =================================== */
+@media (max-width: 1024px) {
+    .cart-layout {
+        grid-template-columns: 1fr; /* Stack 2 cột */
+        gap: 30px;
+    }
+    .cart-summary {
+        position: static; /* Hủy sticky */
+        top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .cart-container {
+        margin-top: 20px;
+        padding: 0 15px;
+    }
+    .cart-header {
+        margin-bottom: 20px;
+    }
+    .cart-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    /* FIX: Bật lại thead trên mobile */
+    /* .cart-table thead {
+        display: none;
+    } */
+    
+    /* FIX: Thay đổi cách responsive table */
+    .cart-table thead {
+        display: none; /* Vẫn ẩn header */
+    }
+    .cart-table tr {
+        display: block;
+        padding: 20px 0;
+        border-bottom: 1px solid #f0f0f0; /* Thêm border cho mỗi "block" item */
+    }
+    .cart-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .cart-table td {
+        display: flex; /* Dùng flex để căn chỉnh */
+        justify-content: space-between; /* Đẩy label và value ra 2 bên */
+        align-items: center;
+        text-align: right; /* Căn phải cho value */
+        padding: 10px 25px;
+    }
+    .cart-table td.cart-product-cell {
+        justify-content: flex-start; /* Riêng cell sản phẩm thì căn trái */
+        text-align: left;
+    }
+
+
+    /* Thêm label cho mobile */
+    .cart-table td[data-label]:before {
+        content: attr(data-label) ":";
+        font-weight: 600;
+        color: #666;
+        text-align: left; /* Căn trái cho label */
+        margin-right: 15px;
+        display: inline-block;
+        /* width: 80px; (Bỏ width cố định) */
+    }
+
+    /* Ẩn label của cell sản phẩm */
+    .cart-table td.cart-product-cell[data-label]:before {
+        display: none;
+    }
+}

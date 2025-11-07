@@ -1,16 +1,30 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt hàng thành công</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-    </style>
+    
+    <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/order_success.css' %}">
 </head>
 <body>
-    <h1>Cảm ơn bạn đã đặt hàng!</h1>
-    <p>Đơn hàng của bạn đã được ghi nhận. Chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
-    <br>
-    <a href="/">Quay về trang chủ</a>
+    {% include "layout/header.html" %}
+
+    <main class="success-page">
+        <div class="success-container">
+            <div class="success-icon">
+                <img src="{% static 'image/check-circle.svg' %}" alt="Đặt hàng thành công">
+            </div>
+            <h1>Cảm ơn bạn đã đặt hàng!</h1>
+            <p>Đơn hàng của bạn đã được ghi nhận.<br>Chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
+            <br>
+            <a href="{% url 'home' %}" class="btn-primary">Quay về trang chủ</a>
+        </div>
+    </main>
+
+    {% include "layout/footer.html" %}
 </body>
 </html>

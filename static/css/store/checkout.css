@@ -1,0 +1,359 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =================================== */
+/* GLOBAL & BODY
+/* =================================== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f9fafb; /* Nền xám nhạt */
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* =================================== */
+/* PAGE LAYOUT
+/* =================================== */
+.checkout-page {
+    padding-bottom: 80px;
+}
+
+.checkout-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 30px;
+}
+
+/* --- Header & Breadcrumbs --- */
+.checkout-header {
+    margin-bottom: 20px;
+}
+
+.checkout-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+}
+
+.checkout-header .back-to-cart-link {
+    text-decoration: none;
+    color: #666;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+.checkout-header .back-to-cart-link:hover {
+    color: #10B981;
+}
+
+
+/* --- Layout chính (2 cột) --- */
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+/* =================================== */
+/* MESSAGES (SUCCESS/ERROR)
+/* =================================== */
+.messages-container {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+}
+.messages-container li {
+    padding: 15px 20px;
+    margin: 10px 0;
+    border-radius: 12px;
+    font-weight: 600;
+}
+.messages-container li.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.messages-container li.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+
+/* =================================== */
+/* CARD STYLING (Chung)
+/* =================================== */
+.checkout-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    padding: 30px 35px;
+}
+
+.checkout-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 25px 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* =================================== */
+/* LEFT COLUMN (Forms)
+/* =================================== */
+.checkout-form-column .checkout-card {
+    margin-bottom: 30px; /* Khoảng cách giữa 2 card */
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* Quan trọng */
+}
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group textarea:focus {
+    border-color: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    outline: none;
+}
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Nút Đặt hàng */
+.place-order-btn {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 14px 22px;
+    height: auto;
+    /* Kế thừa .btn-primary, thêm style bị thiếu */
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+/* Form Voucher */
+.voucher-form {
+    display: flex;
+    gap: 10px;
+}
+
+.voucher-form input {
+    flex: 1; /* Chiếm nhiều không gian */
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    height: 50px; /* Đồng bộ chiều cao */
+    box-sizing: border-box;
+}
+.voucher-form input:focus {
+    border-color: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    outline: none;
+}
+
+.voucher-form button {
+    height: 50px;
+    padding: 0 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+/* Nút Xóa */
+.btn-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+.btn-danger:hover {
+    background: #f5c6cb;
+    transform: translateY(-3px);
+}
+
+/* Nút Áp dụng (Giống Đăng xuất) */
+.apply-btn {
+    border: 2px solid #10B981 !important;
+    color: #10B981;
+    background: transparent;
+    transition: all 0.3s ease;
+    line-height: 46px; /* 50px - 2px border - 2px border */
+    padding: 0 22px !important;
+}
+
+.apply-btn:hover {
+    background: linear-gradient(135deg, #10B981, #06B6D4);
+    color: #fff;
+    border-color: #06B6D4;
+    transform: translateY(-3px);
+}
+
+/* =================================== */
+/* RIGHT COLUMN (Summary) - ĐÃ SỬA
+/* =================================== */
+.checkout-summary {
+    position: sticky;
+    top: 110px;
+}
+
+.summary-item-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px; /* Cho scrollbar */
+}
+
+.summary-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto; 
+    align-items: center;
+    gap: 15px; 
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.summary-item .item-name {
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.95rem;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.summary-item .item-quantity {
+    font-weight: 600;
+    color: #666;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.summary-item .item-subtotal {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95rem;
+    text-align: right;
+    white-space: nowrap; 
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-total-section {
+    border-top: 1px solid #f0f0f0;
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
+.summary-total-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.summary-total-row .label {
+    color: #666;
+    grid-column: 1 / 2;
+}
+
+.summary-total-row .value {
+    font-weight: 600;
+    color: #2c3e50;
+    grid-column: 3 / 4;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.summary-total-row.discount .label,
+.summary-total-row.discount .value {
+    color: #155724; /* Success green */
+    font-weight: 600;
+}
+
+/* FIX: Sửa lỗi selector cho .summary-final-total */
+.summary-total-row.summary-final-total {
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+/* FIX: Sửa lỗi selector cho .summary-final-total */
+.summary-total-row.summary-final-total .label,
+.summary-total-row.summary-final-total .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* FIX: Thêm nowrap để "Tổng cộng:" không bị xuống dòng */
+.summary-total-row.summary-final-total .label {
+    white-space: nowrap;
+}
+
+/* =================================== */
+/* RESPONSIVE
+/* =================================== */
+@media (max-width: 1024px) {
+    .checkout-layout {
+        grid-template-columns: 1fr; /* Stack 2 cột */
+        gap: 30px;
+    }
+    .checkout-summary {
+        position: static; /* Hủy sticky */
+        top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .checkout-container {
+        margin-top: 20px;
+        padding: 0 15px;
+    }
+    .checkout-header h1 {
+        font-size: 1.5rem;
+    }
+    .checkout-card {
+        padding: 20px;
+    }
+    .voucher-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .voucher-form button {
+        width: 100%;
+    }
+}

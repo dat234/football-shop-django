@@ -1,12 +1,44 @@
 # users/views.py
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate, logout # QUAN TRỌNG: Đảm bảo import logout ở đây
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from store.models import Order, OrderItem, Review # Import models từ app 'store'
-# (Không cần import messages ở đây nữa nếu không dùng)
+from django.views.decorators.cache import never_cache 
+# Import thêm Cart, CartItem, Product để xử lý gộp giỏ hàng
+from store.models import Order, OrderItem, Review, Cart, CartItem, Product 
 from users.templates.users.forms import VietnameseAuthenticationForm, VietnameseUserCreationForm
+
+# --- HÀM PHỤ TRỢ: Gộp giỏ hàng Session vào Database ---
+def merge_cart_from_session(request, user):
+    session_cart = request.session.get('cart', {})
+    
+    if session_cart:
+        # Lấy hoặc tạo giỏ hàng DB cho user
+        user_cart, created = Cart.objects.get_or_create(user=user)
+        
+        for product_id_str, quantity in session_cart.items():
+            try:
+                product = Product.objects.get(id=int(product_id_str))
+                
+                # Kiểm tra xem sản phẩm đã có trong giỏ DB chưa
+                cart_item, created = CartItem.objects.get_or_create(cart=user_cart, product=product)
+                
+                if created:
+                    cart_item.quantity = quantity
+                else:
+                    cart_item.quantity += quantity # Nếu có rồi thì cộng dồn
+                
+                # Kiểm tra không vượt quá tồn kho
+                if cart_item.quantity > product.stock:
+                    cart_item.quantity = product.stock
+                
+                cart_item.save()
+            except Product.DoesNotExist:
+                continue
+            
+        # Xóa giỏ hàng session sau khi đã chuyển xong
+        request.session['cart'] = {}
+
 
 # --- Views Đăng ký ---
 def register_view(request):
@@ -14,19 +46,36 @@ def register_view(request):
         form = VietnameseUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # Xóa sạch session cũ trước khi login mới
+            request.session.flush()
             login(request, user)
             return redirect('home')
     else:
         form = VietnameseUserCreationForm()
     return render(request, 'users/register.html', {'form': form})
 
-# --- Views Đăng nhập ---
+# --- Views Đăng nhập (Đã nâng cấp gộp giỏ hàng) ---
 def login_view(request):
     if request.method == 'POST':
         form = VietnameseAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            
+            # 1. Lấy giỏ hàng tạm từ session TRƯỚC KHI flush
+            temp_cart = request.session.get('cart', {})
+            
+            # 2. Xóa sạch session cũ (bảo mật)
+            request.session.flush()
+            
+            # 3. Đăng nhập
             login(request, user)
+            
+            # 4. Khôi phục lại giỏ session vào session mới
+            request.session['cart'] = temp_cart
+            
+            # 5. GỌI HÀM GỘP GIỎ HÀNG
+            merge_cart_from_session(request, user)
+            
             next_url = request.GET.get('next', 'home')
             return redirect(next_url)
     else:
@@ -34,11 +83,12 @@ def login_view(request):
     
     return render(request, 'users/login.html', {'form': form})
 
-# --- Views Đăng xuất (QUAN TRỌNG) ---
+# --- Views Đăng xuất ---
+@never_cache 
 def logout_view(request):
-    logout(request) # Gọi hàm logout chuẩn của Django
-    # (Không cần thêm message ở đây, cứ về home là đủ)
-    return redirect('/') # Chuyển về trang chủ
+    request.session.flush()
+    logout(request)
+    return redirect('home')
 
 # --- View Lịch sử Đơn hàng ---
 @login_required

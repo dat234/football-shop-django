@@ -1,5 +1,5 @@
 {% load static %}
-<!DOCTYPE html>
+{% load custom_filters %} <!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -39,7 +39,7 @@
                     <table class="cart-table">
                         <thead>
                             <tr>
-                                <th colspan="2">Sản phẩm</th>
+                                <th>Sản phẩm</th>
                                 <th>Giá</th>
                                 <th>Số lượng</th>
                                 <th>Thành tiền</th>
@@ -49,21 +49,26 @@
                         <tbody>
                         {% for item in cart_items %}
                         <tr>
-                            <td data-label="Ảnh" class="cart-product-img">
-                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
+                            <td>
+                                <div class="cart-product-cell">
+                                    <a href="{% url 'product_detail' item.product.id %}" class="product-link-wrapper">
+                                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
+                                        <div class="product-name">{{ item.product.name }}</div>
+                                    </a>
+                                </div>
                             </td>
-                            <td data-label="Sản phẩm" class="cart-product-info">
-                            <span class="product-name">{{ item.product.name }}</span>
-                            </td>
-                            <td data-label="Giá" class="product-price">{{ item.product.price|floatformat:0 }} VNĐ</td>
+                            
+                            <td data-label="Giá" class="product-price">{{ item.product.price }} VNĐ</td>
+                            
                             <td data-label="Số lượng">
-                            <form action="{% url 'update_cart' item.product.id %}" method="POST" class="update-cart-form">
-                                {% csrf_token %}
-                                <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}">
-                                <button type="submit" class="update-cart-btn">Cập nhật</button>
-                            </form>
+                                <form action="{% url 'update_cart' item.product.id %}" method="POST" class="update-cart-form">
+                                    {% csrf_token %}
+                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}">
+                                    <button type="submit" class="update-cart-btn" title="Cập nhật số lượng">↻</button>
+                                </form>
                             </td>
-                            <td data-label="Thành tiền" class="product-subtotal">{{ item.subtotal|floatformat:0 }} VNĐ</td>
+                            
+                            <td data-label="Thành tiền" class="product-subtotal">{{ item.subtotal }} VNĐ</td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -75,7 +80,7 @@
                     
                     <div class="summary-row">
                         <span class="label">Tổng cộng:</span>
-                        <span class="value">{{ total_price|floatformat:0 }} VNĐ</span>
+                        <span class="value">{{ total_price }} VNĐ</span>
                     </div>
 
                     <a href="{% url 'checkout' %}" class="btn-primary checkout-btn">
@@ -99,5 +104,4 @@
 
     {% include "layout/footer.html" %}
 </body>
-
 </html>

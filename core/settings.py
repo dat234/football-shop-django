@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -76,11 +76,13 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# --- CẤU HÌNH DATABASE DÙNG CHUNG (NEON.TECH) ---
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        # Link kết nối lấy từ ảnh bạn gửi
+        default='postgresql://neondb_owner:npg_efcvntq9rwa3@ep-restless-river-a1a7lyqk-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require',
+        conn_max_age=600
+    )
 }
 
 
@@ -126,3 +128,19 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# --- CẤU HÌNH SESSION & SECURITY ---
+
+# 1. Tự động đăng xuất khi tắt trình duyệt
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# 2. Thời gian sống của Cookie (180 giây = 3 phút)
+SESSION_COOKIE_AGE = 180
+
+# 3. Bảo mật Cookie
+SESSION_COOKIE_HTTPONLY = True 
+# SESSION_COOKIE_SECURE = True # (Bật khi deploy có HTTPS)
+
+# 4. Tự động làm mới thời gian hết hạn
+SESSION_SAVE_EVERY_REQUEST = True

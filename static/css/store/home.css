@@ -191,9 +191,15 @@ body {
 
 .product-image {
     width: 100%;
-    height: 250px; /* Chiều cao cố định cho đồng bộ */
+    height: auto; 
+    aspect-ratio: 1 / 1; /* Tỷ lệ 1:1 */
     object-fit: cover;
+    padding: 0;
+    background-color: #ffffff;
     border-bottom: 1px solid #f0f0f0;
+    transition: transform 0.3s ease;
+    display: block;
+    margin: 0 auto;
 }
 
 .product-info {

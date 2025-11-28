@@ -10,10 +10,12 @@
     <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
     <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
     <link rel="stylesheet" href="{% static 'css/store/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/message.css' %}">
 </head>
 
 <body>
     {% include "layout/header.html" %}
+    {% include "layout/message.html" %}
 
     <main class="cart-page">
         <div class="cart-container">
@@ -61,11 +63,21 @@
                             <td data-label="Giá" class="product-price">{{ item.product.price }} VNĐ</td>
                             
                             <td data-label="Số lượng">
-                                <form action="{% url 'update_cart' item.product.id %}" method="POST" class="update-cart-form">
-                                    {% csrf_token %}
-                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}">
-                                    <button type="submit" class="update-cart-btn" title="Cập nhật số lượng">↻</button>
-                                </form>
+                                <div class="cart-actions">
+                                    <form action="{% url 'update_cart' item.product.id %}" method="POST" class="update-cart-form ajax-form">
+                                        {% csrf_token %}
+                                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
+                                        <button type="submit" class="btn-update" title="Cập nhật số lượng">↻</button>
+                                    </form>
+
+                                    <form action="{% url 'update_cart' item.product.id %}" method="POST" class="delete-cart-form ajax-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="0">
+                                        
+                                        <button type="submit" class="btn-delete" title="Xóa sản phẩm này">
+                                            &times; </button>
+                                    </form>
+                                </div>
                             </td>
                             
                             <td data-label="Thành tiền" class="product-subtotal">{{ item.subtotal }} VNĐ</td>
@@ -103,5 +115,8 @@
     </main>
 
     {% include "layout/footer.html" %}
+
+    <script src="{% static 'js/toast.js' %}"></script>
+    <script src="{% static 'js/ajax-handler.js' %}"></script>
 </body>
 </html>

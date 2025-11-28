@@ -160,46 +160,89 @@ body {
 }
 
 /* --- Cell Số lượng --- */
-.update-cart-form {
+.cart-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px; /* Khoảng cách giữa cụm nút update và nút xóa */
+}
+
+/* --- Form Cập nhật --- */
+.update-cart-form {
+    display: flex;
+    align-items: stretch; /* Để input và nút cao bằng nhau */
 }
 
 .update-cart-form input[type="number"] {
-    width: 65px;
-    height: 42px;
-    padding: 0 10px;
+    width: 60px;
+    height: 36px; /* Giảm chiều cao chút cho gọn */
+    padding: 0 5px;
     text-align: center;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    border-right: none; /* Bỏ viền phải để nối liền với nút */
+    border-radius: 6px 0 0 6px;
     font-size: 1rem;
     font-weight: 600;
     transition: all 0.3s ease;
 }
+
 .update-cart-form input[type="number"]:focus {
     border-color: #10B981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    box-shadow: none;
     outline: none;
+    position: relative; /* Để viền focus đè lên */
+    z-index: 2;
 }
 
-.update-cart-btn {
-    height: 42px;
-    padding: 0 15px;
-    border: none;
-    background: #f0f4f8;
-    color: #334155;
-    border-radius: 8px;
+/* Nút Cập nhật (Icon xoay) */
+.btn-update {
+    height: 36px;
+    width: 36px;
+    padding: 0;
+    border: 1px solid #3b82f6; /* Viền xanh dương */
+    background: #3b82f6; 
+    color: white;
+    border-radius: 0 6px 6px 0;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s ease;
 }
-.update-cart-btn:hover {
-    background: #e1e7ec;
-    transform: translateY(-2px);
+
+.btn-update:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+/* --- Form Xóa --- */
+.delete-cart-form {
+    display: flex;
+}
+
+/* Nút Xóa (Màu đỏ) */
+.btn-delete {
+    height: 36px;
+    width: 36px;
+    padding: 0;
+    background: #fee2e2; /* Nền đỏ rất nhạt */
+    color: #ef4444;       /* Chữ đỏ */
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.4rem; /* Dấu nhân to hơn chút */
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
 }
 
 
@@ -256,7 +299,7 @@ body {
 }
 
 /* =================================== */
-/* EMPTY CART & MESSAGES
+/* EMPTY CART
 /* =================================== */
 .cart-empty {
     background: #FFFFFF;
@@ -279,21 +322,6 @@ body {
     text-decoration: none;
     border-radius: 8px;
     transition: all 0.3s ease;
-}
-
-.messages {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 30px 0;
-}
-.messages li {
-    padding: 15px 20px;
-    margin: 10px 0;
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-    border-radius: 12px;
-    font-weight: 600;
 }
 
 /* =================================== */
@@ -348,6 +376,10 @@ body {
         text-align: left;
         padding: 10px 0;
     }
+
+    .cart-actions {
+        justify-content: flex-end; /* Căn phải trên mobile */
+    }
     
     /* Thêm label cho mobile */
     .cart-table td[data-label]:before {
@@ -363,4 +395,9 @@ body {
     .cart-table td:first-child:before {
         display: none;
     }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

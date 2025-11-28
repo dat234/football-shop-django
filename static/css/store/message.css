@@ -1,0 +1,94 @@
+/* =================================== */
+/* MESSAGES (SUCCESS/ERROR)
+/* =================================== */
+.messages-container {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 9999;
+    width: 320px;
+
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.messages-container li {
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    position: relative;
+    background: #f9fafb;
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    transition: all 0.5s ease;
+
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+
+
+.messages-container li.success {
+    border-left-color: #6ee7b7;
+    color: #064e3b;
+    background-color: #ecfdf5;
+}
+
+.messages-container li.error {
+    border-left-color: #fca5a5;
+    color: #7f1d1d;
+    background-color: #fef2f2;
+}
+
+.messages-container li.warning {
+    border-left-color: #fcd34d;
+    color: #78350f;
+    background-color: #fffbeb;
+}
+
+.messages-container li.info {
+    border-left-color: #93c5fd;
+    color: #1e3a8a;
+    background-color: #eff6ff;
+}
+
+.close-toast {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    line-height: 1;
+    color: inherit;
+    opacity: 0.6;
+    cursor: pointer;
+    margin-left: 10px;
+    padding: 0 5px;
+}
+.close-toast:hover {
+    opacity: 1;
+}
+
+@keyframes slideInRight {
+    from { 
+        opacity: 0; 
+        transform: translateX(100%);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+}
+
+.fade-out {
+    opacity: 0;
+    transition: translateX(100%);
+}

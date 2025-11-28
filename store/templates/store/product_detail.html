@@ -11,24 +11,15 @@
     <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
     <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
     <link rel="stylesheet" href="{% static 'css/store/product_detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/message.css' %}">
 </head>
 
 <body>
     {% include "layout/header.html" %}
+    {% include "layout/message.html" %}
 
     <main class="product-page">
         <div class="product-container">
-
-            {% if messages %}
-            <ul class="messages-container">
-                {% for message in messages %}
-                <li class="{% if message.tags %}{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-
             <div class="product-breadcrumbs">
                 <a href="{% url 'home' %}"> &lt; Quay lại trang chủ</a>
                 <a href="{% url 'cart_view' %}">Xem Giỏ Hàng</a>
@@ -51,19 +42,33 @@
                     </div>
 
                     {% if product.stock > 0 %}
-                    <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form">
-                        {% csrf_token %}
-                        <div class="quantity-group">
-                            <label for="quantity">Số lượng:</label>
-                            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
-                        </div>
-                        
-                        <button type="submit" name="action" value="add_to_cart" class="btn-primary">
-                            Thêm vào giỏ hàng
-                        </button>
-                    </form>
+                        {% if user.is_authenticated %}
+                            <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form">
+                                {% csrf_token %}
+                                <div class="quantity-group">
+                                    <label for="quantity">Số lượng:</label>
+                                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
+                                </div>
+                                
+                                <button type="submit" name="action" value="add_to_cart" class="btn-primary">
+                                    Thêm vào giỏ hàng
+                                </button>
+                            </form>
+                        {% else %}
+                            <div class="add-to-cart-form">
+                                <div class="quantity-group">
+                                    <label for="quantity">Số lượng:</label>
+                                    <input type="number" value="1" disabled style="background-color: #eee; cursor: not-allowed;">
+                                </div>
+
+                                <a href="{% url 'login' %}?next={{ request.path }}" class="btn-primary" style="display: flex; align-items: center; justify-content: center; height: 50px;">
+                                    Thêm vào giỏ hàng
+                                </a>
+                            </div>
+                        {% endif %}
+
                     {% else %}
-                    <p class="out-of-stock-msg">Sản phẩm này đã hết hàng.</p>
+                        <p class="out-of-stock-msg">Sản phẩm này đã hết hàng.</p>
                     {% endif %}
                 </div>
             </div>
@@ -135,5 +140,8 @@
     </main>
 
     {% include "layout/footer.html" %}
+
+    <script src="{% static 'js/toast.js' %}"></script>
+    <script src="{% static 'js/ajax-handler.js' %}"></script>
 </body>
 </html>

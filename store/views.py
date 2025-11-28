@@ -1,10 +1,12 @@
 # Imports từ Django
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Avg # Import Avg để tính trung bình
 from django.core.paginator import Paginator
 from django.utils import timezone
+from django.urls import reverse
 
 # Import từ project của bạn
 from .models import Product, Category, Order, OrderItem, Voucher, Review, Cart, CartItem # Import thêm Cart, CartItem
@@ -150,55 +152,57 @@ def product_detail(request, product_id):
 # -----------------------------------------------------------------------------
 # GĐ 26: Thêm vào Giỏ hàng (Hỗ trợ DB Cart)
 # -----------------------------------------------------------------------------
+@login_required(login_url='login')
 def add_to_cart(request, product_id):
     if request.method == 'POST' and request.POST.get('action') == 'add_to_cart':
         quantity = int(request.POST.get('quantity', 1))
         product = get_object_or_404(Product, id=product_id)
 
-        # LOGIC MỚI: PHÂN LOẠI USER
-        if request.user.is_authenticated:
-            # --- User đã đăng nhập: Dùng Database ---
-            cart, _ = Cart.objects.get_or_create(user=request.user)
-            cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-            
-            if created:
-                new_quantity = quantity
-            else:
-                new_quantity = cart_item.quantity + quantity
-
-            if new_quantity <= product.stock:
-                cart_item.quantity = new_quantity
-                cart_item.save()
-                messages.success(request, f"Đã thêm {quantity} '{product.name}' vào giỏ.")
-            else:
-                messages.warning(request, "Số lượng vượt quá tồn kho.")
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        
+        if created:
+            new_quantity = quantity
         else:
-            # --- Khách vãng lai: Dùng Session ---
-            cart = request.session.get('cart', {})
-            product_id_str = str(product_id)
-            
-            if quantity > 0 and product.stock > 0 : 
-                current_quantity = cart.get(product_id_str, 0)
-                new_quantity = current_quantity + quantity
-                if new_quantity <= product.stock:
-                    cart[product_id_str] = new_quantity
-                    request.session['cart'] = cart
-                    messages.success(request, f"Đã thêm {quantity} '{product.name}' vào giỏ hàng thành công!")
-                else:
-                    can_add = product.stock - current_quantity
-                    if can_add > 0:
-                        cart[product_id_str] = product.stock
-                        request.session['cart'] = cart
-                        messages.warning(request, f"Chỉ còn {product.stock} sản phẩm. Đã thêm tối đa {can_add} '{product.name}' vào giỏ.")
-                    else:
-                        messages.warning(request, f"Sản phẩm '{product.name}' đã ở mức tối đa trong giỏ của bạn.")
-            elif product.stock <= 0:
-                 messages.error(request, f"Sản phẩm '{product.name}' đã hết hàng.")
-            else: 
-                 messages.error(request, "Số lượng không hợp lệ.")
+            new_quantity = cart_item.quantity + quantity
+        
+        message_text = ""
+        status = "success"
 
-        return redirect('product_detail', product_id=product_id)
-    
+        if new_quantity <= product.stock:
+            cart_item.quantity = new_quantity
+            cart_item.save()
+            message_text = f"Đã thêm {quantity} '{product.name}' vào giỏ."
+        else:
+            # Tính số lượng tối đa có thể thêm
+            available_to_add = product.stock - cart_item.quantity
+            if available_to_add > 0:
+                cart_item.quantity = product.stock
+                cart_item.save()
+                message_text = f"Chỉ còn {product.stock} sản phẩm. Đã thêm tối đa vào giỏ."
+                status = "warning"
+            else:
+                message_text = f"Sản phẩm '{product.name}' đã đạt giới hạn tồn kho trong giỏ."
+                status = "error"
+        
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # Tính tổng số lượng item trong giỏ để update badge trên header (nếu cần)
+            total_items = sum(item.quantity for item in cart.cart_items.all())
+            
+            return JsonResponse({
+                'status': status,
+                'message': message_text,
+                'cart_count': total_items # Trả về số lượng mới để JS cập nhật header
+            })
+
+        # --- NẾU KHÔNG PHẢI AJAX (Fallback) ---
+        if status == 'success':
+            messages.success(request, message_text)
+        elif status == 'warning':
+            messages.warning(request, message_text)
+        else:
+            messages.error(request, message_text)
+
     return redirect('product_detail', product_id=product_id)
 
 
@@ -273,6 +277,8 @@ def update_cart(request, product_id):
             quantity = 1
 
         product = get_object_or_404(Product, id=product_id)
+        msg = ""
+        status = "success"
 
         if request.user.is_authenticated:
             # --- Dùng Database ---
@@ -282,28 +288,31 @@ def update_cart(request, product_id):
                     cart_item, _ = CartItem.objects.get_or_create(cart=cart, product=product)
                     cart_item.quantity = quantity
                     cart_item.save()
-                    messages.success(request, "Đã cập nhật.")
+                    msg = "Đã cập nhật số lượng."
                 else:
-                    messages.warning(request, "Quá tồn kho.")
+                    msg = "Số lượng vượt quá tồn kho."
+                    status = "error"
             else:
                 # Xóa
                 CartItem.objects.filter(cart=cart, product=product).delete()
-                messages.success(request, "Đã xóa sản phẩm.")
+                msg = "Đã xóa sản phẩm khỏi giỏ hàng."
         else:
             # --- Dùng Session ---
             cart = request.session.get('cart', {})
-            product_id_str = str(product_id)
-            if product_id_str in cart:
-                if quantity <= 0:
-                    del cart[product_id_str]
-                    messages.success(request, f"Đã xóa '{product.name}' khỏi giỏ hàng.")
-                elif quantity > product.stock:
-                    cart[product_id_str] = product.stock
-                    messages.warning(request, f"Số lượng '{product.name}' vượt quá tồn kho ({product.stock}), đã đặt tối đa.")
-                else:
-                    cart[product_id_str] = quantity
-                    messages.success(request, f"Đã cập nhật số lượng '{product.name}'.")
-            request.session['cart'] = cart
+            msg = "Đã cập nhật (Session)."
+        
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'status': status,
+                'message': msg,
+                # Nếu bạn muốn trang giỏ hàng tự reload để cập nhật giá tiền:
+                'redirect_url': request.META.get('HTTP_REFERER', '/') 
+                # Hoặc nếu bạn muốn JS tự sửa số tiền thì phải trả về total_price ở đây
+            })
+
+        # --- Fallback ---
+        if status == 'success': messages.success(request, msg)
+        else: messages.error(request, msg)
 
     return redirect('cart_view')
 
@@ -373,13 +382,13 @@ def checkout(request):
                 del request.session['voucher_code']
                 voucher = None
         except Voucher.DoesNotExist:
-            messages.error(request, "Mã giảm giá không tồn tại.")
             del request.session['voucher_code']
 
     final_price = total_price - discount_amount
 
     # --- XỬ LÝ POST ---
     if request.method == 'POST':
+        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
         action = request.POST.get('action')
 
         form_data = {
@@ -392,19 +401,33 @@ def checkout(request):
 
         if action == 'apply_voucher':
             code_from_form = request.POST.get('voucher_code_input')
-            if not code_from_form: messages.error(request, "Vui lòng nhập mã giảm giá."); return redirect('checkout')
+            if not code_from_form: 
+                msg = "Vui lòng nhập mã giảm giá."
+                if is_ajax: return JsonResponse({'status': 'error', 'message': msg})
+                messages.error(request, msg); return redirect('checkout')
             try:
                 voucher_to_apply = Voucher.objects.get(code__iexact=code_from_form)
                 is_valid, message = voucher_to_apply.is_valid(total_price)
                 if is_valid:
                     request.session['voucher_code'] = voucher_to_apply.code
-                    messages.success(request, f"Đã áp dụng mã '{voucher_to_apply.code}'.")
-                else: messages.error(request, message)
-            except Voucher.DoesNotExist: messages.error(request, "Mã giảm giá không tồn tại.")
+                    msg = f"Đã áp dụng mã '{voucher_to_apply.code}'."
+                    if is_ajax: 
+                        return JsonResponse({'status': 'success', 'message': msg, 'redirect_url': ''}) # reload để cập nhật giá
+                    messages.success(request, msg)
+                else:
+                    if is_ajax: return JsonResponse({'status': 'error', 'message': message})
+                    messages.error(request, message)
+            except Voucher.DoesNotExist: 
+                msg = "Mã giảm giá không tồn tại."
+                if is_ajax: return JsonResponse({'status': 'error', 'message': msg})
+                messages.error(request, msg)
             return redirect('checkout')
 
         elif action == 'remove_voucher':
-            if 'voucher_code' in request.session: del request.session['voucher_code']; messages.success(request, "Đã xóa mã giảm giá.")
+            if 'voucher_code' in request.session: del request.session['voucher_code']
+            msg = "Đã xóa mã giảm giá."
+            if is_ajax: return JsonResponse({'status': 'success', 'message': msg, 'redirect_url': ''})
+            messages.success(request, msg)
             return redirect('checkout')
 
         elif action == 'place_order':
@@ -414,24 +437,28 @@ def checkout(request):
             address = form_data['address']
 
             if not all([full_name, email, phone, address]):
-                messages.error(request, "Vui lòng điền đầy đủ thông tin giao hàng.")
-                return redirect('checkout')
+                msg = "Vui lòng điền đầy đủ thông tin giao hàng."
+                if is_ajax: return JsonResponse({'status': 'error', 'message': msg})
+                messages.error(request, msg); return redirect('checkout')
 
             order_data = {
                 'full_name': full_name, 'email': email, 'phone': phone, 'address': address,
                 'total_price': total_price, 'discount_amount': discount_amount, 'voucher': voucher,
             }
             if request.user.is_authenticated: order_data['user'] = request.user
-            new_order = Order.objects.create(**order_data)
 
             try:
+                new_order = Order.objects.create(**order_data)
+
                 for item_data in detailed_cart_items:
                     product = item_data['product']
                     quantity = item_data['quantity']
                     product.refresh_from_db()
                     if product.stock < quantity:
                         new_order.delete()
-                        messages.error(request, f"Sản phẩm '{product.name}' không đủ hàng.")
+                        msg = f"Sản phẩm '{product.name}' vừa hết hàng hoặc không đủ số lượng."
+                        if is_ajax: return JsonResponse({'status': 'error', 'message': msg})
+                        messages.error(request, msg)
                         return redirect('cart_view')
                     
                     OrderItem.objects.create(
@@ -439,22 +466,33 @@ def checkout(request):
                     )
                     product.stock -= quantity
                     product.save()
-            except Exception as e:
-                 new_order.delete()
-                 messages.error(request, f"Lỗi: {e}")
-                 return redirect('checkout')
 
-            # Dọn dẹp sau khi thành công
-            if request.user.is_authenticated:
-                cart_db.delete() # Xóa giỏ hàng trong DB
-            else:
-                del request.session['cart'] # Xóa giỏ hàng Session
+                if request.user.is_authenticated:
+                    Cart.objects.filter(user=request.user).delete()
+                else:
+                    del request.session['cart']
                 
-            if 'voucher_code' in request.session: del request.session['voucher_code']
-            if 'checkout_form_data' in request.session: del request.session['checkout_form_data']
+                if 'voucher_code' in request.session: del request.session['voucher_code']
+                if 'checkout_form_data' in request.session: del request.session['checkout_form_data']
 
-            messages.success(request, "Đặt hàng thành công!")
-            return redirect('order_success')
+                msg = "Đặt hàng thành công!"
+                success_url = reverse('order_success') # Lấy URL trang cảm ơn
+
+                if is_ajax:
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': msg,
+                        'redirect_url': success_url # JS sẽ tự chuyển trang
+                    })
+
+                messages.success(request, msg)
+                return redirect('order_success')
+            except Exception as e:
+                if 'new_order' in locals(): new_order.delete()
+                msg = f"Đã xảy ra lỗi: {str(e)}"
+                if is_ajax: return JsonResponse({'status': 'error', 'message': msg})
+                messages.error(request, msg)
+                return redirect('checkout')
 
     context = {
         'cart_items': detailed_cart_items,

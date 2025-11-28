@@ -61,32 +61,6 @@ body {
 }
 
 /* =================================== */
-/* MESSAGES (SUCCESS/ERROR)
-/* =================================== */
-.messages-container {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 30px 0;
-}
-.messages-container li {
-    padding: 15px 20px;
-    margin: 10px 0;
-    border-radius: 12px;
-    font-weight: 600;
-}
-.messages-container li.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-.messages-container li.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-
-/* =================================== */
 /* CARD STYLING (Chung)
 /* =================================== */
 .checkout-card {
@@ -159,69 +133,91 @@ body {
     text-decoration: none;
 }
 
-/* Form Voucher */
-.voucher-form {
+/* =================================== */
+/* VOUCHER FORM
+/* =================================== */
+.voucher-input-group {
     display: flex;
     gap: 10px;
+    align-items: stretch;
 }
 
-.voucher-form input {
-    flex: 1; /* Chiếm nhiều không gian */
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
+/* Ô nhập mã */
+.voucher-input-group input[type="text"] {
+    flex: 1;
+    height: 42px; /* Đồng bộ chiều cao với header */
+    padding: 0 15px;
+    border: 1px solid #e0e0e0;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    color: #334155;
     transition: all 0.3s ease;
-    height: 50px; /* Đồng bộ chiều cao */
+    background-color: #fff;
     box-sizing: border-box;
 }
-.voucher-form input:focus {
+
+.voucher-input-group input[type="text"]:focus {
     border-color: #10B981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
     outline: none;
 }
 
-.voucher-form button {
-    height: 50px;
-    padding: 0 20px;
+/* --- Style nút Áp dụng (Giống nút Đăng xuất/btn-secondary) --- */
+.btn-secondary.apply-btn {
+    height: 42px; /* Khớp với input */
+    padding: 0 22px;
     font-size: 0.95rem;
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-}
-
-/* Nút Xóa */
-.btn-danger {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-.btn-danger:hover {
-    background: #f5c6cb;
-    transform: translateY(-3px);
-}
-
-/* Nút Áp dụng (Giống Đăng xuất) */
-.apply-btn {
-    border: 2px solid #10B981 !important;
-    color: #10B981;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* STYLE GỐC TỪ HEADER */
     background: transparent;
+    border: 2px solid #10B981;
+    color: #10B981;
     transition: all 0.3s ease;
-    line-height: 46px; /* 50px - 2px border - 2px border */
-    padding: 0 22px !important;
 }
 
-.apply-btn:hover {
+.btn-secondary.apply-btn:hover {
     background: linear-gradient(135deg, #10B981, #06B6D4);
     color: #fff;
-    border-color: #06B6D4;
+    border-color: #06B6D4; /* Hoặc để transparent nếu muốn border chìm đi */
     transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); /* Thêm chút bóng cho đẹp */
+}
+
+/* --- Style nút Xóa mã (Giống hiệu ứng nhưng màu Đỏ) --- */
+.btn-danger {
+    height: 42px;
+    padding: 0 22px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    
+    /* STYLE ĐỎ (Tương tự cấu trúc btn-secondary) */
+    background: transparent;
+    border: 2px solid #ef4444; /* Viền đỏ */
+    color: #ef4444;            /* Chữ đỏ */
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    /* Gradient đỏ cam khi hover */
+    background: linear-gradient(135deg, #ef4444, #f97316); 
+    color: #fff;
+    border-color: #f97316;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
 }
 
 /* =================================== */
-/* RIGHT COLUMN (Summary) - ĐÃ SỬA
+/* RIGHT COLUMN (Summary)
 /* =================================== */
 .checkout-summary {
     position: sticky;
@@ -355,5 +351,16 @@ body {
     }
     .voucher-form button {
         width: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+    .voucher-input-group {
+        flex-direction: column; /* Xuống dòng trên màn hình nhỏ */
+    }
+    .voucher-input-group input[type="text"],
+    .btn-secondary.apply-btn,
+    .btn-danger {
+        width: 100%; /* Full chiều rộng */
     }
 }

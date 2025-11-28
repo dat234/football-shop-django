@@ -1,0 +1,10 @@
+<ul id="toast-container" class="messages-container">
+    {% if messages %}
+        {% for message in messages %}
+            <li class="{{ message.tags }}">
+                <span>{{ message }}</span>
+                <button class="close-toast" onclick="closeToast(this)">&times;</button>
+            </li>
+        {% endfor %}
+    {% endif %}
+</ul>

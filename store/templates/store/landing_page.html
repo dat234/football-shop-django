@@ -126,7 +126,11 @@
         <div class="cta-content">
             <h2 class="section-title">Sẵn sàng trải nghiệm?</h2>
             <p class="section-subtitle">Khám phá website bán đồ bóng đá hiện đại nhất</p>
-            <a href="{% url 'register' %}" class="cta-button">Đăng ký ngay</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'home' %}" class="cta-button">Xem sản phẩm ngay</a>
+            {% else %}
+                <a href="{% url 'register' %}" class="cta-button">Đăng ký ngay</a>
+            {% endif %}
         </div>
     </section>
 

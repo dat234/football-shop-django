@@ -110,11 +110,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
 USE_I18N = True
 
 USE_TZ = True
+
+# Bật tính năng định dạng hàng nghìn
+USE_THOUSAND_SEPARATOR = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -136,7 +139,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # 2. Thời gian sống của Cookie (180 giây = 3 phút)
-SESSION_COOKIE_AGE = 180
+SESSION_COOKIE_AGE = 1800
 
 # 3. Bảo mật Cookie
 SESSION_COOKIE_HTTPONLY = True 

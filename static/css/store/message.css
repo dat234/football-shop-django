@@ -22,8 +22,8 @@
     font-weight: 500;
     font-size: 0.95rem;
     position: relative;
-    background: #f9fafb;
-    box-shadow: none;
+    background: #fff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     border: 1px solid #e5e7eb;
     
     display: flex;
@@ -33,7 +33,7 @@
     animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
     transition: all 0.5s ease;
 
-    border-left-width: 4px;
+    border-left-width: 10px;
     border-left-style: solid;
 }
 

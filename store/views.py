@@ -514,7 +514,7 @@ def order_success(request):
 # GĐ 0: Trang Giới thiệu
 # -----------------------------------------------------------------------------
 def landing_page(request):
-    featured_products = Product.objects.all().order_by('-id')[:4]
+    featured_products = Product.objects.all().order_by('?')[:5]
     context = {
         'featured_products': featured_products
     }

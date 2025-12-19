@@ -150,14 +150,14 @@ body {
 }
 
 .product-card {
-    min-width: 300px;
+    min-width: 280px;
     background: #FFFFFF;
-    border-radius: 20px;
+    border-radius: 16px;
     overflow: hidden;
     scroll-snap-align: start;
     transition: all 0.4s ease;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 1px solid #e5e7eb;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
 }
 
@@ -168,10 +168,13 @@ body {
 }
 
 .product-image {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    border-bottom: 1px solid #f0f0f0;
+    width: 80%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 12px 12px 0 0;
+    border-bottom: none;
+    border: 1px solid #f0f0f0;
 }
 
 .product-info {

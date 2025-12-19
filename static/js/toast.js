@@ -38,7 +38,7 @@ function autoClose(element) {
             element.classList.add('fade-out');
             setTimeout(() => element.remove(), 500);
         }
-    }, 3000);
+    }, 5000);
 }
 
 // Tự động kích hoạt hiệu ứng tắt cho các message có sẵn từ Django (khi load trang)

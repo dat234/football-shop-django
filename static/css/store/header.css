@@ -1,6 +1,6 @@
 .header {
     background: #fff;
-    padding: 15px 30px;
+    padding: 1px 30px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     position: sticky;
     top: 0;
@@ -29,7 +29,7 @@
 }
 
 .logo-img {
-    height: 40px;
+    height: 70px;
     width: auto;
     object-fit: contain;
 }

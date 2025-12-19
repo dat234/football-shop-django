@@ -20,10 +20,15 @@
                     {% if user.is_staff %}
                         <a href="/admin/" class="action-link action-admin">ADMIN</a>
                     {% else %}
-                        <a href="{% url 'cart_view' %}" class="action-link">
-                            <img src="{% static 'image/cart_icon.svg' %}" alt="Cart" class="cart-img">
-                            Giỏ Hàng
-                        </a>
+                        <div class="cart-link-wrapper">
+                            <a href="{% url 'cart_view' %}" class="action-link">
+                                <img src="{% static 'image/cart_icon.svg' %}" alt="Cart" class="cart-img">
+                                Giỏ Hàng
+                            </a>
+                            {% if cart_count > 0 %}
+                                <span class="cart-badge">{{ cart_count }}</span>
+                            {% endif %}
+                        </div>
                         <a href="{% url 'order_history' %}" class="action-link history">Lịch sử đơn hàng</a> 
                     {% endif %}
                 </span>

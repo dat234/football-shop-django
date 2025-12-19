@@ -20,26 +20,18 @@ def home(request):
     category_id = request.GET.get('category')
     sort_by = request.GET.get('sort', '-id') # Mặc định mới nhất
 
-    products = Product.objects.all() # Bắt đầu với tất cả
+    products = Product.objects.all().order_by('-id') # Bắt đầu với tất cả, sắp xếp mặc định
 
     # Lọc theo tìm kiếm
     if search_query:
-        query = search_query.lower().strip()
-        filtered_products = []
-        for p in products:
-            name_lower = p.name.lower()
-            desc_lower = p.description.lower() if p.description else ""
-            if query in name_lower or query in desc_lower:
-                filtered_products.append(p)
-        products = filtered_products
+        # Sử dụng Q objects để tìm kiếm trên nhiều trường, hiệu quả hơn nhiều
+        products = products.filter(
+            Q(name__icontains=search_query) | Q(description__icontains=search_query)
+        )
 
     # Lọc theo danh mục
     if category_id:
-        # Vì products có thể là list (sau khi search), cần filter theo cách khác nếu là list
-        if isinstance(products, list):
-             products = [p for p in products if p.category.id == int(category_id)]
-        else:
-             products = products.filter(category__id=category_id)
+        products = products.filter(category__id=category_id)
 
     # Sắp xếp (Chỉ sắp xếp nếu products là QuerySet, nếu là list thì sort bằng python)
     if not isinstance(products, list):
@@ -48,16 +40,7 @@ def home(request):
                 products = products.order_by('price')
             elif sort_by == 'price_desc':
                 products = products.order_by('-price')
-            else:
-                products = products.order_by('-id')
-    else:
-        # Sort list python
-        if sort_by == 'price_asc':
-            products.sort(key=lambda x: x.price)
-        elif sort_by == 'price_desc':
-            products.sort(key=lambda x: x.price, reverse=True)
-        else:
-            products.sort(key=lambda x: x.id, reverse=True)
+            # else: đã order_by('-id') ở trên rồi
 
 
     # Phân trang

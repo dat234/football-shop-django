@@ -380,7 +380,7 @@ body {
 /* Responsive */
 @media (max-width: 1024px) {
     .tagline { font-size: 2.8em; }
-    .features-grid, .team-grid {
+    .team-grid {
         grid-template-columns: 1fr;
         gap: 30px;
     }

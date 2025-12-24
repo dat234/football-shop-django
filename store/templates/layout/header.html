@@ -15,25 +15,48 @@
 
         <div class="header-actions">
             {% if user.is_authenticated %}
-                <span style="display: flex; align-items: center; gap: 8px;">
-                    Xin chào, <strong>{{ user.username }}</strong>!
-                    {% if user.is_staff %}
-                        <a href="/admin/" class="action-link action-admin">ADMIN</a>
-                    {% else %}
-                        <div class="cart-link-wrapper">
-                            <a href="{% url 'cart_view' %}" class="action-link">
-                                <img src="{% static 'image/cart_icon.svg' %}" alt="Cart" class="cart-img">
-                                Giỏ Hàng
-                            </a>
-                            {% if cart_count > 0 %}
-                                <span class="cart-badge">{{ cart_count }}</span>
-                            {% endif %}
-                        </div>
-                        <a href="{% url 'order_history' %}" class="action-link history">Lịch sử đơn hàng</a> 
+                <!-- GIỎ HÀNG -->
+                <div class="cart-link-wrapper">
+                    <a href="{% url 'cart_view' %}" class="action-link">
+                        <img src="{% static 'image/cart_icon.svg' %}" alt="Cart" class="header-icon">
+                        <span style="margin-left: 8px;">Giỏ Hàng</span>
+                    </a>
+                    {% if cart_count > 0 %}
+                        <span class="cart-badge">{{ cart_count }}</span>
                     {% endif %}
-                </span>
-                
-                <a href="{% url 'logout' %}" class="btn-secondary">Đăng xuất</a>
+                </div>
+
+                <!-- THÔNG BÁO (Placeholder) -->
+                <div class="dropdown">
+                    <button class="action-link dropdown-toggle" id="notification-toggle">
+                        <img src="{% static 'image/bell_icon.svg' %}" alt="Notifications" class="header-icon">
+                        <span style="margin-left: 8px;">Thông báo</span>
+                    </button>
+                    <div class="dropdown-menu" id="notification-menu">
+                        <div class="dropdown-header">Thông Báo</div>
+                        <div class="dropdown-item" style="cursor: default; color: #334155;">Chưa có thông báo mới.</div>
+                    </div>
+                </div>
+
+                <!-- USER PROFILE DROPDOWN -->
+                <div class="dropdown">
+                    <button class="dropdown-toggle icon-btn" id="user-menu-toggle">
+                        <img src="{% static 'image/user_icon.svg' %}" alt="User" class="header-icon">
+                    </button>
+                    <div class="dropdown-menu" id="user-menu">
+                        <div class="dropdown-header">
+                            Xin chào, <strong>{{ user.username }}</strong>!
+                        </div>
+                        {# TODO: Thay đổi href khi có trang profile người dùng, ví dụ {% url 'user_profile' %} #}
+                        <!-- <a href="#" class="dropdown-item">Trang cá nhân</a> -->
+                        <a href="{% url 'order_history' %}" class="dropdown-item">Lịch sử đơn hàng</a>
+                        {% if user.is_staff %}
+                            <a href="/admin/" class="dropdown-item action-admin">Trang ADMIN</a>
+                        {% endif %}
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'logout' %}" class="dropdown-item action-logout">Đăng xuất</a>
+                    </div>
+                </div>
                 
             {% else %}
                 <a href="{% url 'login' %}" class="btn-secondary">Đăng nhập</a>
@@ -42,3 +65,35 @@
         </div>
     </div>
 </header>
+
+{% if user.is_authenticated %}
+{# Script nhỏ để xử lý dropdown. Có thể chuyển vào file JS riêng nếu dự án lớn hơn. #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function setupDropdown(toggleId, menuId) {
+        const toggle = document.getElementById(toggleId);
+        const menu = document.getElementById(menuId);
+        if (!toggle || !menu) return;
+
+        toggle.addEventListener('click', function(event) {
+            event.stopPropagation();
+            document.querySelectorAll('.dropdown-menu.show').forEach(openMenu => {
+                if (openMenu !== menu) openMenu.classList.remove('show');
+            });
+            menu.classList.toggle('show');
+        });
+    }
+
+    setupDropdown('user-menu-toggle', 'user-menu');
+    setupDropdown('notification-toggle', 'notification-menu');
+
+    window.addEventListener('click', function(event) {
+        document.querySelectorAll('.dropdown-menu.show').forEach(openMenu => {
+            if (!openMenu.parentElement.contains(event.target)) {
+                openMenu.classList.remove('show');
+            }
+        });
+    });
+});
+</script>
+{% endif %}

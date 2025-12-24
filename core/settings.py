@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-#4$4ljmsx96y=3w!2@9g7z&^zyv-6ay#9dba&#zrz8d7c1pixk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', #  DÒNG NÀY Để web hiện CSS/Ảnh
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -125,6 +126,11 @@ USE_THOUSAND_SEPARATOR = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+# Thêm dòng này để Render biết chỗ lưu file giao diện
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Thêm dòng này để nén file cho nhẹ web
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]

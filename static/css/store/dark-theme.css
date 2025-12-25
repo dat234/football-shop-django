@@ -41,10 +41,49 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Header dark theme */
+
+/* Header dark theme: absolute black */
 [data-theme="dark"] .header {
-    background: var(--bg-secondary);
+    background: #000 !important;
     box-shadow: 0 4px 12px var(--shadow-sm);
+}
+/* Home sidebar filter group text to light */
+[data-theme="dark"] .filter-group strong,
+[data-theme="dark"] .filter-group li a {
+    color: var(--text-primary) !important;
+}
+
+/* Home product-stock: match card background */
+[data-theme="dark"] .product-stock {
+    background: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Home product-price: keep green in dark */
+[data-theme="dark"] .product-price {
+    color: #10B981 !important;
+}
+
+/* Product detail: quantity label and description to light */
+[data-theme="dark"] .quantity-group label,
+[data-theme="dark"] .product-description,
+[data-theme="dark"] .product-description * {
+    color: var(--text-primary) !important;
+}
+
+/* Cart: cart-empty card bg and text */
+[data-theme="dark"] .cart-empty {
+    background: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+}
+[data-theme="dark"] .cart-empty * {
+    color: var(--text-primary) !important;
+}
+
+/* Cart: cart-page and cart-container bg to dark */
+[data-theme="dark"] .cart-page,
+[data-theme="dark"] .cart-container {
+    background: var(--bg-primary) !important;
 }
 
 [data-theme="dark"] .nav-links a,

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
     <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
     <link rel="stylesheet" href="{% static 'css/user/order_detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/dark-theme.css' %}">
 </head>
 <body>
     {% include "layout/header.html" %}
@@ -126,5 +127,7 @@
     </main>
 
     {% include "layout/footer.html" %}
+    
+    <script src="{% static 'js/theme-toggle.js' %}"></script>
 </body>
 </html>

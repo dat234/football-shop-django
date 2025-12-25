@@ -5,6 +5,8 @@
     position: sticky;
     top: 0;
     z-index: 1000;
+    /* Clip snowfall to header area */
+    overflow: hidden;
 }
 
 .header-content {
@@ -13,6 +15,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* Ensure content sits above snowfall */
+    position: relative;
+    z-index: 1;
 }
 
 .header-left {
@@ -301,4 +306,69 @@
 [data-theme="dark"] .theme-toggle .moon-icon {
     opacity: 1;
     transform: rotate(0deg) scale(1);
+}
+
+/* ===== Snowfall (Header-only) ===== */
+.header {
+    /* Snowflake size variables (overridable via media queries) */
+    --flake-small: 3px;
+    --flake-medium: 7px;
+}
+
+.header .snowfall {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none; /* keep header controls clickable */
+    z-index: 0;
+}
+
+.header .snowflake {
+    width: var(--flake-small);
+    height: var(--flake-small);
+    position: absolute;
+    top: -10%;
+    border-radius: 50%;
+    background-color: #3b82f6; /* blue snow on light theme */
+    animation: snow 6.5s linear infinite, wind 8s ease-in-out infinite;
+}
+
+/* Dark theme: classic white snow */
+[data-theme="dark"] .header .snowflake {
+    background-color: #ffffff;
+}
+
+/* Size variants */
+.header .snowflake:nth-child(3),
+.header .snowflake:nth-child(4),
+.header .snowflake:nth-child(6),
+.header .snowflake:nth-child(8) {
+    width: var(--flake-medium);
+    height: var(--flake-medium);
+}
+
+/* Positions + timing */
+.header .snowflake:nth-child(1) { left: 5%;  animation-delay: 0s;  }
+.header .snowflake:nth-child(2) { left: 20%; animation-delay: 1s;  animation-duration: 7s; }
+.header .snowflake:nth-child(3) { left: 35%; animation-delay: 2s;  animation-duration: 6.5s; }
+.header .snowflake:nth-child(4) { left: 50%; animation-delay: 0.5s; animation-duration: 7.2s; }
+.header .snowflake:nth-child(5) { left: 65%; animation-delay: 1.5s; animation-duration: 6.8s; }
+.header .snowflake:nth-child(6) { left: 80%; animation-delay: 2.5s; animation-duration: 7.4s; }
+.header .snowflake:nth-child(7) { left: 15%; animation-delay: 3s;  animation-duration: 6.7s; }
+.header .snowflake:nth-child(8) { left: 45%; animation-delay: 4s;  animation-duration: 7.1s; }
+.header .snowflake:nth-child(9) { left: 70%; animation-delay: 5s;  animation-duration: 6.9s; }
+.header .snowflake:nth-child(10){ left: 25%; animation-delay: 5.5s; animation-duration: 7.3s; }
+
+@keyframes snow {
+    to { top: 110%; }
+}
+
+@keyframes wind {
+    50% { transform: translateX(60px); }
+}
+
+/* Mobile-friendly: smaller flakes and gentler wind */
+@media (max-width: 600px) {
+    .header { --flake-small: 2px; --flake-medium: 5px; }
+    @keyframes wind { 50% { transform: translateX(30px); } }
 }

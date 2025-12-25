@@ -1,3 +1,10 @@
+[data-theme="dark"] .no-products-found {
+    background: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+}
+[data-theme="dark"] .no-products-found * {
+    color: var(--text-primary) !important;
+}
 /* ===================================== */
 /* DARK THEME STYLES                     */
 /* ===================================== */

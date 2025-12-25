@@ -1,11 +1,13 @@
 {% load static %}
-<!DOCTYPE html>
+{% load socialaccount %} <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - BODAH</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <link rel="stylesheet" href="{% static 'css/user/login.css' %}">
 </head>
 <body>
@@ -49,7 +51,6 @@
                 <div class="form-group">
                     <label for="{{ form.password.id_for_label }}">Mật khẩu:</label>
                     {{ form.password }}
-                    {# Hiển thị lỗi riêng của trường password #}
                     {% if form.password.errors %}
                         <ul class="errorlist">
                             {% for error in form.password.errors %}
@@ -62,6 +63,12 @@
                 <button type="submit" class="auth-btn">Đăng nhập</button>
             </form>
 
+            <div style="margin-top: 15px; text-align: center;">
+                <p style="color: #ccc; margin-bottom: 10px; font-size: 14px;">--- Hoặc ---</p>
+                <a href="{% provider_login_url 'google' %}" class="auth-btn" style="background-color: #db4437; display: block; text-decoration: none; line-height: 45px; margin-top: 0;">
+                    <i class="fab fa-google" style="margin-right: 8px;"></i> Đăng nhập bằng Google
+                </a>
+            </div>
             <div class="auth-footer">
                 <p>Chưa có tài khoản? <a href="{% url 'register' %}">Đăng ký ngay</a></p>
             </div>

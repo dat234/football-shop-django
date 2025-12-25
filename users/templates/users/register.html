@@ -1,14 +1,16 @@
 {% load static %}
-<!DOCTYPE html>
+{% load socialaccount %} <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký - BODAH</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <link rel="stylesheet" href="{% static 'css/user/register.css' %}">
 </head>
 <body>
-    {# Thêm div chứa ảnh nền và lớp phủ mờ #}
     <div class="bg-image-overlay"></div>
 
     <main class="auth-page">
@@ -19,7 +21,6 @@
                 <p>Đăng ký để bắt đầu mua sắm</p>
             </div>
 
-            {# Hiển thị lỗi tổng thể của form (nếu có) #}
             {% if form.non_field_errors %}
                 <div class="form-error">
                     {% for error in form.non_field_errors %}
@@ -34,11 +35,9 @@
                 <div class="form-group">
                     <label for="{{ form.username.id_for_label }}">Tên đăng nhập:</label>
                     {{ form.username }}
-                    {# Hiển thị help text #}
                     {% if form.username.help_text %}
                         <span class="helptext">{{ form.username.help_text }}</span>
                     {% endif %}
-                    {# Hiển thị lỗi #}
                     {% if form.username.errors %}
                         <ul class="errorlist">
                             {% for error in form.username.errors %}
@@ -93,6 +92,12 @@
                 <button type="submit" class="auth-btn">Đăng ký</button>
             </form>
 
+            <div style="margin-top: 15px; text-align: center;">
+                <p style="color: #ccc; margin-bottom: 10px; font-size: 14px;">--- Hoặc ---</p>
+                <a href="{% provider_login_url 'google' %}" class="auth-btn" style="background-color: #db4437; display: block; text-decoration: none; line-height: 45px; margin-top: 0;">
+                    <i class="fab fa-google" style="margin-right: 8px;"></i> Đăng nhập nhanh bằng Google
+                </a>
+            </div>
             <div class="auth-footer">
                 <p>Đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập ngay</a></p>
             </div>

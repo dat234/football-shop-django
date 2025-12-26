@@ -51,7 +51,7 @@ body {
 
 /* Header dark theme: absolute black */
 [data-theme="dark"] .header {
-    background: #000 !important;
+    background: var(--bg-secondary) !important;
     box-shadow: 0 4px 12px var(--shadow-sm);
 }
 /* Home sidebar filter group text to light */

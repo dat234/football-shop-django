@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang cá nhân | {{ user.username }}</title>
+    
+    <link rel="icon" type="image/png" href="{% static 'image/favicon.ico' %}" sizes="96x96" />
+    
+    <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/user/profile.css' %}"> <link rel="stylesheet" href="{% static 'css/store/message.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/dark-theme.css' %}">
+</head>
+<body>
+    {% include "layout/header.html" %}
+    {% include "layout/message.html" %}
+
+    <main class="profile-page">
+        <div class="profile-container">
+            <div class="profile-card">
+                <form method="POST" enctype="multipart/form-data" class="profile-avatar-section">
+                    {% csrf_token %}
+                    
+                    <div class="avatar-wrapper">
+                        {% if user.userprofile.avatar %}
+                            <img src="{{ user.userprofile.avatar.url }}" alt="Avatar" id="avatar-preview">
+                        {% else %}
+                            <img src="{% static 'image/user_icon.svg' %}" alt="Default" id="avatar-preview" style="padding: 20px; background: #f1f5f9;">
+                        {% endif %}
+                    </div>
+                    
+                    <label for="id_avatar" class="btn-upload-label">
+                        Tải ảnh mới
+                    </label>
+                    <input type="file" name="avatar" id="id_avatar" accept="image/*" onchange="previewAndSubmit(this)">
+                </form>
+
+                <form method="POST" class="profile-info-section">
+                    {% csrf_token %}
+                    <h3>Thông tin cá nhân</h3>
+
+                    <div class="form-group">
+                        <label>Tên người dùng</label>
+                        <input type="text" value="{{ user.username }}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_full_name">Họ và tên</label>
+                        <input type="text" name="full_name" id="id_full_name" value="{{ user.get_full_name }}" placeholder="Nhập tên hiển thị của bạn">
+                    </div>
+
+                    <div class="form-group email-group">
+                        <label>Địa chỉ Email</label>
+                        <input type="email" value="{{ user.email }}" readonly>
+                        
+                        <div class="verify-wrapper">
+                            {% if user.userprofile.is_email_verified %}
+                                <span class="badge badge-success">
+                                    Đã xác minh
+                                </span>
+                            {% else %}
+                                <div>
+                                    <span class="badge badge-warning">Chưa xác minh</span>
+                                    <button type="submit" name="action" value="verify_email" class="btn-verify-link">
+                                        Gửi mail xác nhận
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_phone">Số điện thoại</label>
+                        <input type="tel" name="phone" id="id_phone" value="{{ user.userprofile.phone_number|default:'' }}" placeholder="Thêm số điện thoại">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" name="action" value="update_profile" class="btn-save">
+                            Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    {% include "layout/footer.html" %}
+    
+    <script src="{% static 'js/theme-toggle.js' %}"></script>
+    <script src="{% static 'js/toast.js' %}"></script>
+    
+    <script>
+        function previewAndSubmit(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatar-preview').src = e.target.result;
+                    // Tùy chọn: Bạn có thể bỏ comment dòng dưới để tự động lưu Avatar ngay khi chọn ảnh
+                    // input.form.submit(); 
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -14,8 +14,8 @@ from store.views import (
 # THÊM IMPORT MỚI TỪ APP 'users'
 from users.views import (
     register_view, login_view, logout_view, 
-    order_history_view  ,
-    order_detail_view
+    order_history_view,
+    order_detail_view, profile_view, verify_email_confirm
 )
 from store.admin import my_admin_site
 urlpatterns = [
@@ -34,6 +34,8 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('order-history/', order_history_view, name='order_history'),
     path('order-detail/<int:order_id>/', order_detail_view, name='order_detail'),
+    path('profile/', profile_view, name='profile'),
+    path('verify-email/<uidb64>/<token>/', verify_email_confirm, name='verify_email_confirm'),
 ]
 
 if settings.DEBUG:

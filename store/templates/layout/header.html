@@ -62,6 +62,7 @@
                         <div class="dropdown-header">
                             Xin chào, <strong>{{ user.username }}</strong>!
                         </div>
+                        <a href="{% url 'profile' %}" class="dropdown-item">Trang cá nhân</a>
                         <a href="{% url 'order_history' %}" class="dropdown-item">Lịch sử đơn hàng</a>
                         {% if user.is_staff %}
                             <a href="/admin/" class="dropdown-item action-admin">Trang ADMIN</a>
@@ -77,6 +78,7 @@
             {% endif %}
         </div>
     </div>
+    
     <!-- Snowfall effect scoped to header -->
     <div class="snowfall" aria-hidden="true">
         <span class="snowflake"></span>
@@ -91,18 +93,12 @@
         <span class="snowflake"></span>
     </div>
 
-    <!-- Light rope effect -->
-    <ul class="light-rope">
-        <li></li> <li></li> <li></li> <li></li> <li></li> <li></li>
-        <li></li> <li></li> <li></li> <li></li> <li></li> <li></li>
-        <li></li> <li></li> <li></li> <li></li> <li></li> <li></li>
-        <li></li> <li></li> <li></li> <li></li> <li></li> <li></li>
-        <li></li> <li></li> <li></li> <li></li> <li></li> <li></li>
-        <li></li> <li></li> <li></li> <li></li> <li></li> <li></li>
-        <li></li> <li></li> <li></li> <li></li> <li></li> <li></li>
-        <li></li> <li></li> <li></li> <li></li> <li></li> <li></li>
-        <li></li> <li></li> <li></li> <li></li> <li></li> <li></li>
-    </ul>
+    <div class="christmas-lights">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
 </header>
 
 {% if user.is_authenticated %}

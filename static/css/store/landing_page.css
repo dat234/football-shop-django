@@ -139,7 +139,7 @@ body {
     overflow-x: hidden;
     scroll-snap-type: none;
     padding: 60px 0;
-    align-items: center;
+    align-items: stretch;
     scrollbar-width: none; /* Firefox */
     scroll-behavior: auto; /* QUAN TRỌNG: Tắt smooth CSS để JS xử lý logic vòng lặp không bị lỗi tua ngược */
 }
@@ -151,6 +151,7 @@ body {
 .product-card {
     /* Chia 5 sản phẩm trên màn hình: 18vw * 5 + 2vw * 4 (gap) ~= 100vw */
     width: 18vw; 
+    height: auto;
     min-width: 200px; /* Đảm bảo không quá nhỏ trên mobile */
     flex-shrink: 0;
     background: #FFFFFF;
@@ -159,6 +160,8 @@ body {
     transition: all 0.5s ease;
     border: 1px solid #e5e7eb;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
     
     /* Default state: blurred and smaller */
     transform: scale(0.9);
@@ -189,6 +192,15 @@ body {
     border-color: #10B981;
     opacity: 1;
     filter: blur(0);
+}
+
+.product-card a {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
 }
 
 /* Carousel Navigation Buttons */
@@ -225,30 +237,39 @@ body {
 }
 
 .product-image {
-    width: 80%;
-    height: auto;
-    max-height: 300px;
-    object-fit: contain;
-    border-radius: 12px 12px 0 0;
-    border-bottom: none;
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 0;
     border: none;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .product-info {
     padding: 25px 30px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .product-name {
     font-size: 1.5em;
     color: #2c3e50;
     margin: 0 0 10px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 3rem;
 }
 
 .product-price {
     color: #10B981;
     font-size: 1.25rem;
     font-weight: 700;
-    margin: 0;
+    margin-top: auto;
 }
 
 

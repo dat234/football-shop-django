@@ -1,0 +1,282 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =================================== */
+/* PROFILE PAGE STYLES - MODERN
+/* =================================== */
+
+/* Layout & Container */
+.profile-page {
+    /* Giữ nguyên màu nền */
+    background-color: #f8fafc;
+    padding: 80px 80px; /* Bỏ padding dưới để căn giữa chuẩn hơn */
+}
+
+.profile-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header */
+.profile-header {
+    margin-bottom: 25px;
+    text-align: center; /* Căn giữa tiêu đề cho cân đối */
+}
+
+.profile-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+/* Main Card */
+.profile-card {
+    background: #FFFFFF;
+    border-radius: 24px; /* Bo góc mềm mại hơn */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); /* Bóng đổ rất nhẹ và lan tỏa */
+    padding: 0; /* Xóa padding gốc để dùng layout grid */
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 320px 1fr; /* Chia cột: Avatar | Info */
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+/* =================================== */
+/* LEFT COLUMN: AVATAR & SIDEBAR
+/* =================================== */
+.profile-avatar-section {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    padding: 50px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid #edf2f7;
+}
+
+/* Avatar Wrapper */
+.avatar-wrapper {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    margin-bottom: 25px;
+    position: relative;
+    background: transparent;
+    padding: 0;
+    overflow: hidden;
+}
+
+.avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    padding: 0 !important; 
+}
+
+/* Camera Icon Overlay (Hiệu ứng khi hover vào ảnh) */
+/* Removed overlay */
+
+/* Upload Button */
+.btn-upload-label {
+    margin-top: 10px;
+    padding: 10px 24px;
+    background: #fff;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    border-radius: 50px; /* Nút hình viên thuốc */
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    transition: all 0.2s ease;
+}
+
+.btn-upload-label:hover {
+    border-color: #10B981;
+    color: #10B981;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.1);
+}
+
+#id_avatar { display: none; }
+
+/* =================================== */
+/* RIGHT COLUMN: INFO FORM
+/* =================================== */
+.profile-info-section {
+    padding: 50px;
+}
+
+.profile-info-section h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-info-section h3::before {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 24px;
+    background: #10B981;
+    border-radius: 2px;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Input Styles */
+.form-group input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #1e293b;
+    transition: all 0.2s ease;
+}
+
+/* Focus State */
+.form-group input:focus {
+    border-color: #10B981;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    outline: none;
+}
+
+/* Readonly Input */
+.form-group input[readonly] {
+    background-color: #f1f5f9; /* Xám đậm hơn chút để phân biệt */
+    border-color: transparent;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* Email Verification Styles */
+.email-group { position: relative; }
+
+.verify-wrapper {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Huy hiệu (Badge) */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-success {
+    background-color: #ecfdf5;
+    color: #059669;
+    border: 1px solid #d1fae5;
+}
+
+.badge-warning {
+    background-color: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fef3c7;
+}
+
+/* Nút xác minh */
+.btn-verify-link {
+    font-size: 0.85rem;
+    color: #10B981;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+    margin-left: 10px;
+}
+
+.btn-verify-link:hover {
+    color: #059669;
+    text-decoration: underline;
+}
+
+/* Action Buttons */
+.form-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: flex-end; /* Nút nằm bên phải */
+}
+
+.btn-save {
+    background-color: transparent;
+    color: #10B981;
+    border: 2px solid #10B981;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-save:hover {
+    background: linear-gradient(135deg, #10B981, #06B6D4);
+    color: #fff;
+    border-color: #06B6D4;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* =================================== */
+/* RESPONSIVE DESIGN
+/* =================================== */
+@media (max-width: 850px) {
+    .profile-card {
+        grid-template-columns: 1fr; /* 1 Cột trên mobile */
+    }
+    
+    .profile-avatar-section {
+        border-right: none;
+        border-bottom: 1px solid #edf2f7;
+        padding: 40px 30px;
+    }
+    
+    .profile-info-section {
+        padding: 30px 25px;
+    }
+
+    .form-actions {
+        justify-content: stretch; /* Nút full width trên mobile */
+    }
+    
+    .btn-save {
+        width: 100%;
+    }
+}

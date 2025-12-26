@@ -66,11 +66,6 @@ body {
     color: var(--text-primary) !important;
 }
 
-/* Home product-price: keep green in dark */
-[data-theme="dark"] .product-price {
-    color: #10B981 !important;
-}
-
 /* Product detail: quantity label and description to light */
 [data-theme="dark"] .quantity-group label,
 [data-theme="dark"] .product-description,
@@ -91,6 +86,8 @@ body {
 [data-theme="dark"] .cart-page,
 [data-theme="dark"] .cart-container {
     background: var(--bg-primary) !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 [data-theme="dark"] .nav-links a,
@@ -429,7 +426,7 @@ body {
 }
 
 [data-theme="dark"] .cart-table tbody tr:hover {
-    background: var(--hover-bg);
+    background: none !important;
 }
 
 [data-theme="dark"] .cart-item-name {
@@ -903,6 +900,10 @@ body {
     color: var(--text-secondary);
 }
 
+[data-theme="dark"] .product-card .product-price {
+    color: #10B981;
+}
+
 /* ===================================== */
 /* CHECKOUT ORDER REVIEW SECTION        */
 /* ===================================== */
@@ -971,6 +972,48 @@ body {
 }
 
 /* ===================================== */
+/* PROFILE PAGE DARK THEME              */
+/* ===================================== */
+[data-theme="dark"] .profile-page {
+    background-color: var(--bg-primary);
+}
+
+[data-theme="dark"] .profile-header h1 {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .profile-card {
+    background: var(--card-bg);
+    box-shadow: 0 5px 20px var(--shadow-sm);
+}
+
+[data-theme="dark"] .profile-avatar-section {
+    background: var(--card-bg);
+    border-right-color: var(--border-color);
+}
+
+[data-theme="dark"] .profile-info-section h3 {
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-upload-label {
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+[data-theme="dark"] .btn-upload-label:hover {
+    background: var(--hover-bg);
+    color: #10B981;
+}
+
+/* Fix badge warning color in dark mode */
+[data-theme="dark"] .badge-warning {
+    background-color: rgba(245, 158, 11, 0.15) !important;
+    color: #fbbf24 !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+/* ===================================== */
 /* LANDING PAGE PRODUCTS & SECTIONS     */
 /* ===================================== */
 [data-theme="dark"] .products-section,
@@ -990,6 +1033,10 @@ body {
 [data-theme="dark"] .carousel-nav-btn:hover {
     background: #10B981;
     color: #fff;
+}
+
+[data-theme="dark"] .product-image {
+    border-bottom-color: var(--border-color);
 }
 
 [data-theme="dark"] .section-title {

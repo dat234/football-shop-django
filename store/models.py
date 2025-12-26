@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # --- CÁC LỰA CHỌN TRẠNG THÁI ---
 ORDER_STATUS_CHOICES = [
@@ -114,6 +116,7 @@ class Cart(models.Model):
     def total_price(self):
         return sum(item.subtotal for item in self.cart_items.all())
 
+# --- MODEL CARTITEM (GIỎ HÀNG DATABASE) ---
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cart_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -125,3 +128,26 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
+
+# --- MODEL USERPROFILE ---
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    address = models.TextField(null=True, blank=True) # Dùng để pre-fill checkout
+    is_email_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    # Sử dụng get_or_create để đảm bảo profile luôn tồn tại
+    UserProfile.objects.get_or_create(user=instance)
+    if hasattr(instance, 'userprofile'):
+        instance.userprofile.save()

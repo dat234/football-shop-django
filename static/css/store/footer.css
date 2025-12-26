@@ -3,6 +3,9 @@
     color: #666;
     padding: 80px 30px 0;
     position: relative;
+    overflow: hidden;
+    --flake-small: 10px;
+    --flake-medium: 18px;
 }
 
 .footer::before {
@@ -18,6 +21,8 @@
 .footer-content {
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .footer-main {
@@ -129,4 +134,114 @@
     .footer-legal {
         gap: 15px;
     }
+}
+
+/* ===== Christmas Lights ===== */
+.christmas-lights {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    pointer-events: none;
+}
+
+.christmas-lights span {
+    width: 10px;
+    height: 10px;
+    background: red;
+    border-radius: 50%;
+    box-shadow: 0 0 8px currentColor;
+    animation: blink 2s infinite ease-in-out;
+}
+
+/* Màu xen kẽ */
+.christmas-lights span:nth-child(3n) { background: #10B981; }
+.christmas-lights span:nth-child(3n+1) { background: #f59e0b; }
+.christmas-lights span:nth-child(3n+2) { background: #ef4444; }
+
+.christmas-lights span:nth-child(even) {
+    animation-delay: 1s;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+/* ===== Snowfall (Header-only) ===== */
+.footer .snowfall {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none; /* keep header controls clickable */
+    z-index: 0;
+}
+
+.footer .snowflake {
+    width: var(--flake-small);
+    height: var(--flake-small);
+    position: absolute;
+    top: -20px;
+    border-radius: 0;
+    -webkit-mask-image: url("../../image/snowflake.svg");
+    mask-image: url("../../image/snowflake.svg");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    background-color: #3b82f6; /* blue snow on light theme */
+    animation: snow 4.5s linear infinite, wind 8s ease-in-out infinite, spin 10s linear infinite;
+}
+
+/* Dark theme: classic white snow */
+[data-theme="dark"] .footer .snowflake {
+    background-color: #ffffff;
+}
+
+/* Size variants */
+.footer .snowflake:nth-child(even) {
+    width: var(--flake-medium);
+    height: var(--flake-medium);
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Positions + timing */
+.footer .snowflake:nth-child(1) { left: 5%;  animation-delay: 0s;  }
+.footer .snowflake:nth-child(2) { left: 20%; animation-delay: 1s;  animation-duration: 7s; }
+.footer .snowflake:nth-child(3) { left: 35%; animation-delay: 2s;  animation-duration: 6.5s; }
+.footer .snowflake:nth-child(4) { left: 50%; animation-delay: 0.5s; animation-duration: 7.2s; }
+.footer .snowflake:nth-child(5) { left: 65%; animation-delay: 1.5s; animation-duration: 6.8s; }
+.footer .snowflake:nth-child(6) { left: 80%; animation-delay: 2.5s; animation-duration: 7.4s; }
+.footer .snowflake:nth-child(7) { left: 15%; animation-delay: 3s;  animation-duration: 6.7s; }
+.footer .snowflake:nth-child(8) { left: 45%; animation-delay: 4s;  animation-duration: 7.1s; }
+.footer .snowflake:nth-child(9) { left: 70%; animation-delay: 5s;  animation-duration: 6.9s; }
+.footer .snowflake:nth-child(10){ left: 25%; animation-delay: 5.5s; animation-duration: 7.3s; }
+
+.footer .snowflake {
+    animation: snow 6.5s linear infinite, wind 8s ease-in-out infinite;
+}
+
+@keyframes snow {
+    to { top: 110%; }
+}
+
+@keyframes wind {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(60px); }
+}
+
+/* Mobile-friendly: smaller flakes and gentler wind */
+@media (max-width: 600px) {
+    .footer { --flake-small: 6px; --flake-medium: 12px; }
+    @keyframes wind { 50% { transform: translateX(30px); } }
 }

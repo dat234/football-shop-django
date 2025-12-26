@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.urls import reverse
 
 # Import từ project của bạn
-from .models import Product, Category, Order, OrderItem, Voucher, Review, Cart, CartItem # Import thêm Cart, CartItem
+from .models import Product, Category, Order, OrderItem, Voucher, Review, Cart, CartItem, UserProfile
 
 # -----------------------------------------------------------------------------
 # GĐ 19: Home (Tìm kiếm, Lọc, Sắp xếp, Phân trang)
@@ -340,15 +340,22 @@ def checkout(request):
                 del cart_session[product_id]
         request.session['cart'] = cart_session
 
-    # 1. Lấy dữ liệu form đã lưu tạm trong session
-    form_data = request.session.get('checkout_form_data', {
+    # 1. Chuẩn bị dữ liệu mặc định (Pre-fill)
+    initial_data = {
         'full_name': '',
         'email': '',
         'phone': '',
         'address': ''
-    })
-    if request.user.is_authenticated and not form_data['email']:
-        form_data['email'] = request.user.email
+    }
+    if request.user.is_authenticated:
+        initial_data['email'] = request.user.email
+        initial_data['full_name'] = request.user.get_full_name()
+        if hasattr(request.user, 'userprofile'):
+            initial_data['phone'] = request.user.userprofile.phone_number or ''
+            initial_data['address'] = request.user.userprofile.address or ''
+
+    # 2. Ưu tiên dữ liệu từ session (nếu user vừa nhập sai hoặc reload), nếu không dùng initial_data
+    form_data = request.session.get('checkout_form_data', initial_data)
 
     # --- Xử lý Voucher ---
     voucher_code = request.session.get('voucher_code')

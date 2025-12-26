@@ -3,9 +3,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.views.decorators.cache import never_cache 
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.models import User
 # Import thêm Cart, CartItem, Product để xử lý gộp giỏ hàng
-from store.models import Order, OrderItem, Review, Cart, CartItem, Product 
+from store.models import Order, OrderItem, Review, Cart, CartItem, Product, UserProfile
 from users.templates.users.forms import VietnameseAuthenticationForm, VietnameseUserCreationForm
 
 # --- HÀM PHỤ TRỢ: Gộp giỏ hàng Session vào Database ---
@@ -88,7 +95,7 @@ def login_view(request):
 def logout_view(request):
     request.session.flush()
     logout(request)
-    return redirect('home')
+    return redirect('landing_page')
 
 # --- View Lịch sử Đơn hàng ---
 @login_required
@@ -118,3 +125,69 @@ def order_detail_view(request, order_id):
         'item_review_status': item_review_status
     }
     return render(request, 'users/order_detail.html', context)
+
+@login_required
+def profile_view(request):
+    user = request.user
+    # Đảm bảo profile tồn tại
+    if not hasattr(user, 'userprofile'):
+        UserProfile.objects.create(user=user)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'update_profile':
+            full_name = request.POST.get('full_name')
+            phone = request.POST.get('phone')
+            avatar = request.FILES.get('avatar')
+
+            if full_name:
+                names = full_name.strip().split(' ', 1)
+                user.first_name = names[0]
+                user.last_name = names[1] if len(names) > 1 else ''
+                user.save()
+
+            if phone:
+                user.userprofile.phone_number = phone
+            
+            if avatar:
+                user.userprofile.avatar = avatar
+            
+            user.userprofile.save()
+            messages.success(request, 'Cập nhật hồ sơ thành công!')
+            
+        elif action == 'verify_email':
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            verify_link = request.build_absolute_uri(f'/verify-email/{uid}/{token}/')
+            
+            subject = 'Xác minh email BODAH Shop'
+            message = f'Chào {user.username},\n\nVui lòng nhấp vào link sau để xác minh email của bạn:\n{verify_link}'
+            from_email = settings.EMAIL_HOST_USER
+            
+            try:
+                send_mail(subject, message, from_email, [user.email])
+                messages.info(request, f'Đã gửi email xác minh tới {user.email}. Vui lòng kiểm tra hộp thư.')
+            except Exception as e:
+                messages.error(request, 'Lỗi gửi mail. Vui lòng thử lại sau.')
+
+        return redirect('profile')
+
+    # Đã sửa đường dẫn template thành 'users/profile.html'
+    return render(request, 'users/profile.html')
+
+def verify_email_confirm(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.userprofile.is_email_verified = True
+        user.userprofile.save()
+        messages.success(request, 'Xác minh email thành công!')
+        return redirect('profile')
+    else:
+        messages.error(request, 'Link xác minh không hợp lệ hoặc đã hết hạn.')
+        return redirect('home')

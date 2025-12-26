@@ -196,6 +196,7 @@ body {
     object-fit: cover;
     padding: 0;
     background-color: #ffffff;
+    border: none !important;
     border-bottom: 1px solid #f0f0f0;
     transition: transform 0.3s ease;
     display: block;

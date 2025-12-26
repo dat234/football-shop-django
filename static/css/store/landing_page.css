@@ -129,42 +129,99 @@ body {
 /* Products Section */
 .products-section {
     background: #f9fafb;
-    padding: 100px 30px;
+    padding: 100px 18px; /* Bỏ padding ngang để full màn hình */
+    overflow: hidden;
 }
 
 .products-carousel {
     display: flex;
-    gap: 30px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding: 20px 5px;
-    scrollbar-width: thin;
-    scrollbar-color: #10B981 #e0e0e0;
+    gap: 2vw; /* Khoảng cách tương đối theo màn hình */
+    overflow-x: hidden;
+    scroll-snap-type: none;
+    padding: 60px 0;
+    align-items: center;
+    scrollbar-width: none; /* Firefox */
+    scroll-behavior: auto; /* QUAN TRỌNG: Tắt smooth CSS để JS xử lý logic vòng lặp không bị lỗi tua ngược */
 }
 
-.products-carousel::-webkit-scrollbar { height: 8px; }
-.products-carousel::-webkit-scrollbar-track { background: #e0e0e0; border-radius: 10px; }
-.products-carousel::-webkit-scrollbar-thumb {
-    background: linear-gradient(90deg, #10B981, #06B6D4);
-    border-radius: 10px;
+.products-carousel::-webkit-scrollbar { 
+    display: none;
 }
 
 .product-card {
-    min-width: 280px;
+    /* Chia 5 sản phẩm trên màn hình: 18vw * 5 + 2vw * 4 (gap) ~= 100vw */
+    width: 18vw; 
+    min-width: 200px; /* Đảm bảo không quá nhỏ trên mobile */
+    flex-shrink: 0;
     background: #FFFFFF;
     border-radius: 16px;
     overflow: hidden;
-    scroll-snap-align: start;
-    transition: all 0.4s ease;
-    cursor: pointer;
+    transition: all 0.5s ease;
     border: 1px solid #e5e7eb;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    
+    /* Default state: blurred and smaller */
+    transform: scale(0.9);
+    opacity: 0.5;
+    filter: blur(2px);
+    
+    /* Chặn click vào sản phẩm mờ */
+    pointer-events: none; 
+    cursor: default;
+}
+
+/* Active state: Center item */
+.product-card.active {
+    transform: scale(1.1);
+    opacity: 1;
+    filter: blur(0);
+    z-index: 10;
+    border-color: #10B981;
+    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2);
+    
+    /* Cho phép click vào sản phẩm sáng */
+    pointer-events: auto;
+    cursor: pointer;
 }
 
 .product-card:hover {
-    transform: translateY(-10px);
+    /* Pause effect handled in JS, visual feedback here */
     border-color: #10B981;
-    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2);
+    opacity: 1;
+    filter: blur(0);
+}
+
+/* Carousel Navigation Buttons */
+.carousel-nav-btn {
+    position: absolute;
+    top: 55%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    color: #10B981;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+.carousel-nav-btn:hover {
+    background: #10B981;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+.carousel-nav-btn.prev { left: -20px; }
+.carousel-nav-btn.next { right: -20px; }
+
+@media (max-width: 1400px) {
+    .carousel-nav-btn.prev { left: 10px; }
+    .carousel-nav-btn.next { right: 10px; }
 }
 
 .product-image {
@@ -174,7 +231,7 @@ body {
     object-fit: contain;
     border-radius: 12px 12px 0 0;
     border-bottom: none;
-    border: 1px solid #f0f0f0;
+    border: none;
 }
 
 .product-info {
@@ -230,7 +287,7 @@ body {
 
 /* Team Section */
 .team-section {
-    background: #FFFFFF;
+    background: #f9fafb;
 }
 
 .team-grid {

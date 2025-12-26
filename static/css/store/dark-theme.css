@@ -496,11 +496,17 @@ body {
 
 [data-theme="dark"] .product-info .product-description {
     color: var(--text-secondary);
+    border-top-color: var(--border-color);
 }
 
 [data-theme="dark"] .product-reviews {
     background: var(--card-bg);
     box-shadow: 0 5px 20px var(--shadow-sm);
+}
+
+[data-theme="dark"] .product-reviews h2 {
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color);
 }
 
 [data-theme="dark"] .product-reviews h3 {
@@ -511,6 +517,10 @@ body {
 [data-theme="dark"] .review-item {
     border-bottom-color: var(--border-color);
     color: var(--text-primary);
+}
+
+[data-theme="dark"] .review-form {
+    border-top-color: var(--border-color);
 }
 
 [data-theme="dark"] .review-author {
@@ -801,13 +811,14 @@ body {
 /* ===== Specific Home Page Stock Badge ===== */
 [data-theme="dark"] .product-stock {
     color: var(--text-primary);
-    background: var(--input-bg);
+    background: transparent !important;
 }
 
 /* ===== Product Detail Stock Badge ===== */
-[data-theme="dark"] .product-info .product-stock {
-    background: var(--input-bg);
-    color: var(--text-primary);
+[data-theme="dark"] .product-main-layout .product-stock {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color);
 }
 
 /* ===== Cart Summary Labels & Values ===== */
@@ -962,12 +973,23 @@ body {
 /* ===================================== */
 /* LANDING PAGE PRODUCTS & SECTIONS     */
 /* ===================================== */
-[data-theme="dark"] .products-section {
+[data-theme="dark"] .products-section,
+[data-theme="dark"] .team-section {
     background: var(--bg-primary);
 }
 
 [data-theme="dark"] .section-content {
     color: var(--text-primary);
+}
+
+[data-theme="dark"] .carousel-nav-btn {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+    color: #10B981;
+}
+[data-theme="dark"] .carousel-nav-btn:hover {
+    background: #10B981;
+    color: #fff;
 }
 
 [data-theme="dark"] .section-title {

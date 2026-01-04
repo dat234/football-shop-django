@@ -2,16 +2,22 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 # --- CÁC LỰA CHỌN TRẠNG THÁI ---
 ORDER_STATUS_CHOICES = [
     ('Mới', 'Mới'),
+    ('Chờ thanh toán', 'Chờ thanh toán'),
     ('Đang xử lý', 'Đang xử lý'),
     ('Đang giao', 'Đang giao'),
     ('Hoàn thành', 'Hoàn thành'),
     ('Đã hủy', 'Đã hủy'),
+]
+
+PAYMENT_METHOD_CHOICES = [
+    ('cod', 'Thanh toán khi nhận hàng (COD)'),
+    ('qr', 'Chuyển khoản ngân hàng (QR)'),
 ]
 
 # --- MODEL CATEGORY (Như cũ) ---
@@ -68,9 +74,12 @@ class Order(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=0, help_text="Tổng tiền ban đầu")
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='Mới')
+    payment_method = models.CharField(max_length=10, choices=PAYMENT_METHOD_CHOICES, default='cod')
     
     voucher = models.ForeignKey(Voucher, on_delete=models.SET_NULL, null=True, blank=True)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=0, default=0, help_text="Số tiền đã được giảm")
+
+    payment_proof = models.ImageField(upload_to='payment_proofs/', null=True, blank=True)
     
     @property
     def final_price(self):
@@ -140,6 +149,17 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+# --- MODEL NOTIFICATION (MỚI) ---
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -151,3 +171,41 @@ def save_user_profile(sender, instance, **kwargs):
     UserProfile.objects.get_or_create(user=instance)
     if hasattr(instance, 'userprofile'):
         instance.userprofile.save()
+
+# --- SIGNALS CHO THÔNG BÁO ĐƠN HÀNG ---
+
+# 1. Bắt trạng thái cũ trước khi lưu để so sánh
+@receiver(pre_save, sender=Order)
+def track_order_status(sender, instance, **kwargs):
+    try:
+        old_instance = Order.objects.get(pk=instance.pk)
+        instance._old_status = old_instance.status
+    except Order.DoesNotExist:
+        instance._old_status = None
+
+# 2. Tạo thông báo sau khi lưu
+@receiver(post_save, sender=Order)
+def create_order_notification(sender, instance, created, **kwargs):
+    if created:
+        # Chỉ tạo thông báo thành công ngay nếu là COD
+        if instance.payment_method == 'cod':
+            Notification.objects.create(
+                user=instance.user,
+                title="Đặt hàng thành công",
+                message=f"Đơn hàng #{instance.id} của bạn đã được đặt thành công. Chúng tôi sẽ sớm liên hệ."
+            )
+    elif instance._old_status is not None and instance._old_status != instance.status:
+        # Nếu là QR và vừa chuyển từ Chờ thanh toán -> Đang xử lý (đã upload ảnh)
+        if instance.payment_method == 'qr' and instance._old_status == 'Chờ thanh toán' and instance.status != 'Chờ thanh toán':
+             Notification.objects.create(
+                user=instance.user,
+                title="Đặt hàng thành công",
+                message=f"Chúng tôi đã nhận được thông tin thanh toán cho đơn hàng #{instance.id}. Đơn hàng đang được xử lý."
+            )
+        else:
+            # Thông báo khi trạng thái thay đổi thông thường
+            Notification.objects.create(
+                user=instance.user,
+                title="Cập nhật đơn hàng",
+                message=f"Đơn hàng #{instance.id} của bạn đã chuyển sang trạng thái: {instance.status}."
+            )

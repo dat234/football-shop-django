@@ -1,6 +1,6 @@
 # users/views.py
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -12,8 +12,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.models import User
 # Import thêm Cart, CartItem, Product để xử lý gộp giỏ hàng
-from store.models import Order, OrderItem, Review, Cart, CartItem, Product, UserProfile
+from store.models import Order, OrderItem, Review, Cart, CartItem, Product, UserProfile, Notification
 from users.templates.users.forms import VietnameseAuthenticationForm, VietnameseUserCreationForm
+from django.http import JsonResponse
 
 # --- HÀM PHỤ TRỢ: Gộp giỏ hàng Session vào Database ---
 def merge_cart_from_session(request, user):
@@ -186,8 +187,32 @@ def verify_email_confirm(request, uidb64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.userprofile.is_email_verified = True
         user.userprofile.save()
+        
+        # Tạo thông báo xác minh thành công
+        Notification.objects.create(
+            user=user,
+            title="Xác minh tài khoản",
+            message="Chúc mừng! Email của bạn đã được xác minh thành công."
+        )
+        
         messages.success(request, 'Xác minh email thành công!')
         return redirect('profile')
     else:
         messages.error(request, 'Link xác minh không hợp lệ hoặc đã hết hạn.')
         return redirect('home')
+
+# --- API: Lấy chi tiết thông báo và đánh dấu đã đọc ---
+@login_required
+def get_notification_detail(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    
+    # Đánh dấu là đã đọc
+    if not notification.is_read:
+        notification.is_read = True
+        notification.save()
+    
+    return JsonResponse({
+        'title': notification.title,
+        'message': notification.message,
+        'created_at': notification.created_at.strftime('%H:%M %d/%m/%Y')
+    })

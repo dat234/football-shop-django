@@ -8,14 +8,15 @@ from django.conf.urls.static import static
 from store.views import (
     home, product_detail, add_to_cart, cart_view, 
     update_cart, checkout, 
-    order_success,
+    order_success, payment_info,
     landing_page
 )
 # THÊM IMPORT MỚI TỪ APP 'users'
 from users.views import (
     register_view, login_view, logout_view, 
     order_history_view,
-    order_detail_view, profile_view, verify_email_confirm
+    order_detail_view, profile_view, verify_email_confirm,
+    get_notification_detail
 )
 from store.admin import my_admin_site
 urlpatterns = [
@@ -27,6 +28,7 @@ urlpatterns = [
     path('cart/', cart_view, name='cart_view'),
     path('update-cart/<int:product_id>/', update_cart, name='update_cart'),
     path('checkout/', checkout, name='checkout'),
+    path('payment-info/<int:order_id>/', payment_info, name='payment_info'),
     path('order-success/', order_success, name='order_success'),
     # URL cho user registration, login, logout
     path('register/', register_view, name='register'),
@@ -36,6 +38,7 @@ urlpatterns = [
     path('order-detail/<int:order_id>/', order_detail_view, name='order_detail'),
     path('profile/', profile_view, name='profile'),
     path('verify-email/<uidb64>/<token>/', verify_email_confirm, name='verify_email_confirm'),
+    path('notifications/<int:notification_id>/', get_notification_detail, name='notification_detail'),
 ]
 
 if settings.DEBUG:

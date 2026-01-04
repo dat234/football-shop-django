@@ -101,6 +101,46 @@ body {
     background-color: var(--hover-bg);
 }
 
+/* Dropdown Menu Dark Theme (User & Notification) */
+[data-theme="dark"] .dropdown-menu {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 40px var(--shadow-lg);
+}
+
+[data-theme="dark"] .dropdown-header {
+    color: #10B981;
+    border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .dropdown-header strong {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+    background-color: var(--hover-bg);
+    color: #10B981;
+}
+
+[data-theme="dark"] .dropdown-item.action-admin,
+[data-theme="dark"] .dropdown-item.action-logout {
+    color: #ef4444;
+}
+
+[data-theme="dark"] .dropdown-item.action-admin:hover,
+[data-theme="dark"] .dropdown-item.action-logout:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+[data-theme="dark"] .dropdown-divider {
+    border-top: 1px solid var(--border-color);
+}
+
 /* Sidebar dark theme */
 [data-theme="dark"] .filter-group {
     background: var(--card-bg);

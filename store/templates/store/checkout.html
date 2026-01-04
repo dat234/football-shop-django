@@ -42,7 +42,7 @@
             </ul>
             {% endif %}
 
-            <form action="{% url 'checkout' %}" method="POST" class="checkout-layout">
+            <form action="{% url 'checkout' %}" method="POST" class="checkout-layout" novalidate>
                 {% csrf_token %}
                 
                 <div class="checkout-form-column">
@@ -50,24 +50,60 @@
                     <div class="checkout-card">
                         <h3>Thông tin giao hàng</h3>
                         
+                        {% if form.non_field_errors %}
+                            <div class="form-error">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}<br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
                         <div class="form-group">
                             <label for="full_name">Họ và tên:</label>
                             <input type="text" name="full_name" value="{{ form_data.full_name }}" required>
+                            {% if form.full_name.errors %}
+                                <ul class="errorlist">
+                                    {% for error in form.full_name.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </div>
                         
                         <div class="form-group">
                             <label for="email">Email:</label>
                             <input type="email" name="email" value="{{ form_data.email }}" required>
+                            {% if form.email.errors %}
+                                <ul class="errorlist">
+                                    {% for error in form.email.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </div>
 
                         <div class="form-group">
                             <label for="phone">Số điện thoại:</label>
                             <input type="text" name="phone" value="{{ form_data.phone }}" required>
+                            {% if form.phone.errors %}
+                                <ul class="errorlist">
+                                    {% for error in form.phone.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </div>
                         
                         <div class="form-group">
                             <label for="address">Địa chỉ nhận hàng:</label>
                             <textarea name="address" rows="4" required>{{ form_data.address }}</textarea>
+                            {% if form.address.errors %}
+                                <ul class="errorlist">
+                                    {% for error in form.address.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -84,6 +120,22 @@
                             {% else %}
                                 <button type="submit" name="action" value="apply_voucher" class="btn-secondary apply-btn" formnovalidate>Áp dụng</button>
                             {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="checkout-card">
+                        <h3>Hình thức thanh toán</h3>
+                        
+                        <div class="payment-simple-group">
+                            <label class="payment-simple-option">
+                                <input type="radio" name="payment_method" value="cod" checked>
+                                <span>Thanh toán khi nhận hàng (COD)</span>
+                            </label>
+
+                            <label class="payment-simple-option">
+                                <input type="radio" name="payment_method" value="qr">
+                                <span>Chuyển khoản Ngân hàng (QR Code)</span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -134,5 +186,27 @@
     <script src="{% static 'js/theme-toggle.js' %}"></script>
     <script src="{% static 'js/toast.js' %}"></script>
     <script src="{% static 'js/ajax-handler.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+            const submitBtn = document.querySelector('.place-order-btn');
+
+            function updateButtonText() {
+                const selected = document.querySelector('input[name="payment_method"]:checked');
+                if (selected && selected.value === 'qr') {
+                    submitBtn.textContent = 'Tiếp tục thanh toán';
+                } else {
+                    submitBtn.textContent = 'Xác nhận Đặt hàng';
+                }
+            }
+
+            paymentRadios.forEach(radio => {
+                radio.addEventListener('change', updateButtonText);
+            });
+
+            // Cập nhật khi trang vừa tải
+            updateButtonText();
+        });
+    </script>
 </body>
 </html>

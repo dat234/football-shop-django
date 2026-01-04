@@ -217,6 +217,78 @@ body {
 }
 
 /* =================================== */
+/* PAYMENT METHOD STYLES
+/* =================================== */
+.payment-simple-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.payment-simple-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #334155;
+    user-select: none;
+}
+
+.payment-simple-option input[type="radio"] {
+    -webkit-appearance: none; 
+    appearance: none;
+    
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    margin: 0; 
+}
+
+.payment-simple-option input[type="radio"]:checked {
+    border-color: #10B981;
+    background-color: #fff;
+}
+
+.payment-simple-option input[type="radio"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 10px; 
+    height: 10px;
+    border-radius: 50%;
+    background-color: #10B981;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.payment-simple-option input[type="radio"]:checked::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+[data-theme="dark"] .payment-simple-option {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .payment-simple-option input[type="radio"] {
+    border-color: #94a3b8;
+    background-color: transparent;
+}
+
+[data-theme="dark"] .payment-simple-option input[type="radio"]:checked {
+    border-color: #10B981;
+}
+
+/* =================================== */
 /* RIGHT COLUMN (Summary)
 /* =================================== */
 .checkout-summary {
@@ -363,4 +435,26 @@ body {
     .btn-danger {
         width: 100%; /* Full chiều rộng */
     }
+}
+
+/* =================================== */
+/* FORM ERROR STYLES
+/* =================================== */
+.errorlist {
+    list-style: none;
+    margin: 6px 0 0 0;
+    padding: 0;
+    color: #ef4444;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.form-error {
+    background-color: #fee2e2;
+    border: 1px solid #ef4444;
+    color: #b91c1c;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
 }

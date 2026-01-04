@@ -1,9 +1,10 @@
 {% load static %}
+<link rel="stylesheet" href="{% static 'css/store/notification.css' %}">
 <header class="header">
     <div class="header-content">
         <div class="header-left">
             <a href="{% url 'home' %}" class="logo">
-                <img src="{% static 'image/bodah-logo-black-noel.png' %}" alt="BODAH Logo" class="logo-img">
+                <img src="{% static 'image/bodah-logo-black.png' %}" alt="BODAH Logo" class="logo-img">
             </a>
 
             <!-- <nav class="nav-links">
@@ -43,20 +44,41 @@
                     {% endif %}
                 </div>
 
-                <div class="dropdown">
-                    <button class="action-link dropdown-toggle" id="notification-toggle">
-                        <img src="{% static 'image/bell_icon.svg' %}" alt="Notifications" class="header-icon">
+                <div class="header-action-item" style="position: relative;">
+                    <button class="action-link notification-btn" style="background:none; border:none; cursor:pointer;">
+                        <img src="{% static 'image/bell_icon.svg' %}" alt="Thông báo" class="header-icon">
                         <span style="margin-left: 8px;">Thông báo</span>
                     </button>
-                    <div class="dropdown-menu" id="notification-menu">
-                        <div class="dropdown-header">Thông Báo</div>
-                        <div class="dropdown-item" style="cursor: default; color: #334155;">Chưa có thông báo mới.</div>
+                    {% if notification_unread_count > 0 %}
+                        <span class="cart-badge notif-badge">{{ notification_unread_count }}</span>
+                    {% endif %}
+                
+                    <!-- Dropdown List -->
+                    <div class="notification-dropdown dropdown-menu">
+                        <div class="notification-header">
+                            <span>Thông báo</span>
+                        </div>
+                        <div class="notification-list">
+                            {% for notif in notifications %}
+                                <div class="notification-item {% if not notif.is_read %}unread{% endif %}" data-id="{{ notif.id }}" data-url="{% url 'notification_detail' notif.id %}">
+                                    <div class="notif-title">{{ notif.title }}</div>
+                                    <div class="notif-preview">{{ notif.message }}</div>
+                                    <div class="notif-time">{{ notif.created_at|date:"H:i d/m" }}</div>
+                                </div>
+                            {% empty %}
+                                <div class="empty-notif">Chưa có thông báo nào</div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
 
                 <div class="dropdown">
                     <button class="dropdown-toggle icon-btn" id="user-menu-toggle">
-                        <img src="{% static 'image/user_icon.svg' %}" alt="User" class="header-icon">
+                        {% if user.userprofile.avatar %}
+                            <img src="{{ user.userprofile.avatar.url }}" alt="{{ user.username }}" class="header-icon" style="border-radius: 50%; object-fit: cover;">
+                        {% else %}
+                            <img src="{% static 'image/user_icon.svg' %}" alt="User" class="header-icon">
+                        {% endif %}
                     </button>
                     <div class="dropdown-menu" id="user-menu">
                         <div class="dropdown-header">
@@ -101,6 +123,18 @@
     </div>
 </header>
 
+<!-- Modal Popup (Đặt ở cuối file header hoặc body) -->
+<div id="notif-modal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close">&times;</button>
+        <h3 id="modal-title" class="modal-title"></h3>
+        <div id="modal-message" class="modal-body"></div>
+        <div id="modal-time" class="modal-footer"></div>
+    </div>
+</div>
+
+<script src="{% static 'js/notification.js' %}"></script>
+
 {% if user.is_authenticated %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -119,7 +153,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setupDropdown('user-menu-toggle', 'user-menu');
-    setupDropdown('notification-toggle', 'notification-menu');
 
     window.addEventListener('click', function(event) {
         document.querySelectorAll('.dropdown-menu.show').forEach(openMenu => {

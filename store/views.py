@@ -312,7 +312,6 @@ def checkout(request):
         cart_db, _ = Cart.objects.get_or_create(user=request.user)
         db_items = cart_db.cart_items.all()
         if not db_items:
-             messages.error(request, "Giỏ hàng của bạn rỗng.")
              return redirect('home')
         for item in db_items:
              # Kiểm tra tồn kho
@@ -324,7 +323,6 @@ def checkout(request):
     else:
         cart_session = request.session.get('cart', {})
         if not cart_session:
-            messages.error(request, "Giỏ hàng của bạn rỗng.")
             return redirect('home')
         
         for product_id, quantity in list(cart_session.items()):
@@ -431,9 +429,17 @@ def checkout(request):
                 if is_ajax: return JsonResponse({'status': 'error', 'message': msg})
                 messages.error(request, msg); return redirect('checkout')
 
+            payment_method = request.POST.get('payment_method', 'cod')
+
+            initial_status = 'Mới'
+            if payment_method == 'qr':
+                initial_status = 'Chờ thanh toán'
+
             order_data = {
                 'full_name': full_name, 'email': email, 'phone': phone, 'address': address,
                 'total_price': total_price, 'discount_amount': discount_amount, 'voucher': voucher,
+                'payment_method': payment_method,
+                'status': initial_status,
             }
             if request.user.is_authenticated: order_data['user'] = request.user
 
@@ -457,16 +463,25 @@ def checkout(request):
                     product.stock -= quantity
                     product.save()
 
-                if request.user.is_authenticated:
-                    Cart.objects.filter(user=request.user).delete()
-                else:
-                    del request.session['cart']
+                payment_method = request.POST.get('payment_method')
                 
-                if 'voucher_code' in request.session: del request.session['voucher_code']
-                if 'checkout_form_data' in request.session: del request.session['checkout_form_data']
+                if payment_method == 'qr':
+                    # Với QR: KHÔNG xóa giỏ hàng ngay, để người dùng có thể back lại nếu muốn đổi ý
+                    msg = ""
+                    success_url = reverse('payment_info', args=[new_order.id])
+                else:
+                    # Với COD: Xóa giỏ hàng và session ngay lập tức
+                    if request.user.is_authenticated:
+                        Cart.objects.filter(user=request.user).delete()
+                    else:
+                        del request.session['cart']
+                    
+                    if 'voucher_code' in request.session: del request.session['voucher_code']
+                    if 'checkout_form_data' in request.session: del request.session['checkout_form_data']
 
-                msg = "Đặt hàng thành công!"
-                success_url = reverse('order_success') # Lấy URL trang cảm ơn
+                    # Với COD: Báo thành công ngay
+                    msg = "Đặt hàng thành công!"
+                    success_url = reverse('order_success') # Lấy URL trang cảm ơn
 
                 if is_ajax:
                     return JsonResponse({
@@ -475,8 +490,7 @@ def checkout(request):
                         'redirect_url': success_url # JS sẽ tự chuyển trang
                     })
 
-                messages.success(request, msg)
-                return redirect('order_success')
+                return redirect(success_url)
             except Exception as e:
                 if 'new_order' in locals(): new_order.delete()
                 msg = f"Đã xảy ra lỗi: {str(e)}"
@@ -493,6 +507,38 @@ def checkout(request):
         'form_data': form_data,
     }
     return render(request, 'store/checkout.html', context)
+
+# -----------------------------------------------------------------------------
+# GĐ 27: Thông tin Chuyển khoản
+# -----------------------------------------------------------------------------
+def payment_info(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    
+    if request.method == 'POST':
+        # Kiểm tra xem có file ảnh gửi lên không
+        if 'payment_proof' in request.FILES:
+            proof_image = request.FILES['payment_proof']
+            
+            # Lưu ảnh vào model Order
+            order.payment_proof = proof_image
+            if order.status == 'Chờ thanh toán':
+                order.status = 'Đang xử lý' # Tự động cập nhật trạng thái khi đã gửi ảnh
+            order.save()
+
+            # Xóa giỏ hàng và session sau khi đã xác nhận thanh toán QR thành công
+            if request.user.is_authenticated:
+                Cart.objects.filter(user=request.user).delete()
+            else:
+                if 'cart' in request.session: del request.session['cart']
+            
+            if 'voucher_code' in request.session: del request.session['voucher_code']
+            if 'checkout_form_data' in request.session: del request.session['checkout_form_data']
+
+            return redirect('order_success')
+        else:
+            messages.error(request, "Vui lòng tải lên ảnh bằng chứng chuyển khoản.")
+    
+    return render(request, 'store/payment_info.html', {'order': order})
 
 # -----------------------------------------------------------------------------
 # GĐ 10: Trang Cảm ơn

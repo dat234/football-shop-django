@@ -19,9 +19,9 @@
 
     <main class="profile-page">
         <div class="profile-container">
-            <div class="profile-card">
-                <form method="POST" enctype="multipart/form-data" class="profile-avatar-section">
-                    {% csrf_token %}
+            <form method="POST" enctype="multipart/form-data" class="profile-card">
+                {% csrf_token %}
+                <div class="profile-avatar-section">
                     
                     <div class="avatar-wrapper">
                         {% if user.userprofile.avatar %}
@@ -35,10 +35,9 @@
                         Tải ảnh mới
                     </label>
                     <input type="file" name="avatar" id="id_avatar" accept="image/*" onchange="previewAndSubmit(this)">
-                </form>
+                </div>
 
-                <form method="POST" class="profile-info-section">
-                    {% csrf_token %}
+                <div class="profile-info-section">
                     <h3>Thông tin cá nhân</h3>
 
                     <div class="form-group">
@@ -81,8 +80,8 @@
                             Lưu thay đổi
                         </button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </main>
 

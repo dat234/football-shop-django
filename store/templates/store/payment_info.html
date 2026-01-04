@@ -1,0 +1,191 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh toán đơn hàng #{{ order.id }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/payment_info.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store/dark-theme.css' %}">
+</head>
+<body>
+    {% include "layout/header.html" %}
+    {% include "layout/message.html" %}
+
+    <div class="payment-page-container">
+        <div class="payment-left-section">
+            
+            <div class="payment-header-row">
+                <a href="{% url 'checkout' %}" class="back-link">&lt; Quay lại</a>
+                <h3>Chuyển khoản qua QR</h3>
+            </div>
+
+            <div class="instruction-box">
+                <h4>Hướng dẫn</h4>
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Mở ứng dụng ngân hàng / ví điện tử</li>
+                    <li><span class="step-num">2</span> Quét mã QR hoặc nhập thông tin bên dưới để chuyển khoản</li>
+                    <li><span class="step-num">3</span> Sau khi chuyển khoản thành công, vui lòng tải ảnh minh chứng và bấm xác nhận bên dưới.</li>
+                </ul>
+            </div>
+
+            <div class="bank-info-container">
+                <div class="bank-details">
+                    <h4>Thông tin chuyển khoản</h4>
+                    <div class="detail-row">
+                        <span class="label">Tài khoản</span>
+                        <span class="value">VU QUOC BAO</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Ngân hàng</span>
+                        <span class="value">MB BANK</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Số tài khoản</span>
+                        <span class="value">0918125904 <i class="copy-icon" onclick="copyText('0918125904')">
+                            <img src="{% static 'image/copy_icon.svg' %}" alt="Copy" class="copy-icon-img">
+                        </i></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Nội dung</span>
+                        <span class="value highlight-blue">DH{{ order.id }} <i class="copy-icon" onclick="copyText('DH{{ order.id }}')">
+                            <img src="{% static 'image/copy_icon.svg' %}" alt="Copy" class="copy-icon-img">
+                        </i></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Số tiền</span>
+                        <span class="value highlight-price">{{ order.total_price|vnd }}đ <i class="copy-icon" onclick="copyText('{{ order.total_price|floatformat:0 }}')">
+                            <img src="{% static 'image/copy_icon.svg' %}" alt="Copy" class="copy-icon-img">
+                        </i></span>
+                    </div>
+                    
+                    <div class="note-box">
+                        Lưu ý: Vui lòng kiểm tra đúng Nội dung chuyển khoản để cửa hàng có thể xác minh chính xác giao dịch của bạn.
+                    </div>
+                </div>
+
+                <div class="qr-code-box">
+                    <p class="qr-title">Quét mã QR để chuyển khoản</p>                    
+                    <div class="qr-img-wrapper">
+                        <img src="{% static 'image/mb_qr.png' %}" alt="QR Code">
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" class="upload-proof-section" onsubmit="return validateForm()">
+                {% csrf_token %}
+                <h4>Hình ảnh chuyển khoản</h4>
+                <p class="upload-desc">Tải lên ảnh chụp màn hình chuyển khoản để cửa hàng dễ dàng xác minh giao dịch bạn nhé.</p>
+                
+                <div class="upload-area">
+                    <input type="file" name="payment_proof" id="proof_file" accept="image/*" required onchange="previewImage(this)">
+                    <label for="proof_file" class="upload-btn">
+                        Tải lên
+                    </label>
+                    <div id="file-name-display">Chưa chọn ảnh nào</div>
+                </div>
+
+                <img id="image-preview" src="#" alt="Xem trước ảnh" style="display: none; max-width: 200px; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd;">
+
+                <button type="submit" class="btn-confirm-payment">XÁC NHẬN ĐÃ CHUYỂN KHOẢN</button>
+            </form>
+
+        </div>
+
+        <div class="payment-right-section">
+            <div class="cart-summary-card">
+                <h3>Giỏ hàng</h3>
+                <div class="item-list">
+                    {% for item in order.items.all %}
+                    <div class="summary-item">
+                        <div class="item-img">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
+                            {% else %}
+                            <div class="no-img">📷</div>
+                            {% endif %}
+                        </div>
+                        <div class="item-info">
+                            <p class="name">{{ item.product.name }}</p>
+                            <p class="variant">x{{ item.quantity }}</p>
+                            <p class="price">{{ item.product.price }} VNĐ</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <hr>
+                <div class="total-row">
+                    <span>Tổng tiền hàng</span>
+                    <span>{{ order.total_price|vnd }}đ</span>
+                </div>
+                <div class="total-row final">
+                    <span>Tổng thanh toán</span>
+                    <span>{{ order.total_price|vnd }}đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "layout/footer.html" %}
+
+    <script src="{% static 'js/toast.js' %}"></script>
+    <script>
+        // Tự động hiển thị thông báo từ Server (Django messages) bằng Toast
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if messages %}
+                {% for message in messages %}
+                    if (typeof toast === 'function') {
+                        toast({
+                            title: "{% if 'success' in message.tags %}Thành công{% elif 'error' in message.tags %}Thất bại{% else %}Thông báo{% endif %}",
+                            message: "{{ message|escapejs }}",
+                            type: "{% if 'success' in message.tags %}success{% elif 'error' in message.tags %}error{% else %}info{% endif %}"
+                        });
+                    }
+                {% endfor %}
+            {% endif %}
+        });
+
+        // Script xem trước ảnh
+        function previewImage(input) {
+            var preview = document.getElementById('image-preview');
+            var fileName = document.getElementById('file-name-display');
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+                fileName.textContent = "Đã chọn: " + input.files[0].name;
+                fileName.style.color = "#10B981";
+            }
+        }
+        
+        // Script copy
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            if (typeof toast === 'function') {
+                toast({
+                    title: "Thành công",
+                    message: "Đã sao chép: " + text,
+                    type: "success"
+                });
+            } else {
+                alert("Đã sao chép: " + text);
+            }
+        }
+
+        function validateForm() {
+            var fileInput = document.getElementById('proof_file');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Vui lòng tải lên ảnh minh chứng chuyển khoản trước khi xác nhận!");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

@@ -150,7 +150,7 @@ body {
 
 .product-card {
     /* Chia 5 sản phẩm trên màn hình: 18vw * 5 + 2vw * 4 (gap) ~= 100vw */
-    width: 18vw; 
+    width: 14vw; 
     height: auto;
     min-width: 200px; /* Đảm bảo không quá nhỏ trên mobile */
     flex-shrink: 0;
@@ -239,7 +239,7 @@ body {
 .product-image {
     width: 100%;
     height: 280px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 0;
     border: none;
     border-bottom: 1px solid #f0f0f0;

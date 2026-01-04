@@ -1,0 +1,192 @@
+/* Badge số lượng thông báo */
+.notif-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    /* Các thuộc tính khác sẽ kế thừa từ .cart-badge */
+}
+
+/* Dropdown Menu Styles */
+.notification-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 320px;
+    /* background: #fff;  <-- Xóa để kế thừa từ dropdown-menu */
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    display: none; /* Ẩn mặc định */
+    z-index: 1000;
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+    margin-top: 10px;
+}
+
+.notification-dropdown.show {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.notification-header {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 700;
+    color: #10B981; /* Đổi sang màu xanh ngọc */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-list {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.notification-item:hover {
+    background-color: #f8fafc;
+}
+
+.notification-item.unread {
+    background-color: #ecfdf5; /* Màu xanh nhạt cho tin chưa đọc */
+}
+
+.notification-item.unread:hover {
+    background-color: #d1fae5;
+}
+
+.notif-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #1e293b;
+}
+
+.notif-preview {
+    font-size: 0.85rem;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notif-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    align-self: flex-end;
+}
+
+.empty-notif {
+    padding: 20px;
+    text-align: center;
+    color: #94a3b8;
+}
+
+/* --- MODAL POPUP STYLES --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: #fff;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 16px;
+    padding: 30px;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.modal-overlay.active .modal-content {
+    transform: translateY(0);
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #94a3b8;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #ef4444;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #10B981;
+    margin-bottom: 15px;
+    padding-right: 20px;
+}
+
+.modal-body {
+    font-size: 1rem;
+    color: #334155;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.modal-footer {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 15px;
+}
+
+/* Dark Theme Support */
+[data-theme="dark"] .notification-dropdown,
+[data-theme="dark"] .modal-content {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .notif-title,
+[data-theme="dark"] .modal-body {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .notification-header,
+[data-theme="dark"] .modal-title {
+    color: #10B981;
+}
+
+[data-theme="dark"] .notification-item:hover {
+    background-color: var(--hover-bg);
+}
+
+[data-theme="dark"] .notification-item.unread {
+    background-color: rgba(16, 185, 129, 0.15);
+}

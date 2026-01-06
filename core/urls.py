@@ -28,7 +28,7 @@ urlpatterns = [
     path('cart/', cart_view, name='cart_view'),
     path('update-cart/<int:product_id>/', update_cart, name='update_cart'),
     path('checkout/', checkout, name='checkout'),
-    path('payment-info/<int:order_id>/', payment_info, name='payment_info'),
+    path('payment-info/', payment_info, name='payment_info'),
     path('order-success/', order_success, name='order_success'),
     # URL cho user registration, login, logout
     path('register/', register_view, name='register'),

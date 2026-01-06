@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết Đơn hàng #{{ order.id }}</title>
+    <title>Chi tiết Đơn hàng #{{ order.order_code }}</title>
     
     <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
     <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
@@ -20,7 +20,7 @@
         <div class="detail-container">
 
             <div class="detail-header">
-                <h1>Chi tiết Đơn hàng #{{ order.id }}</h1>
+                <h1>Chi tiết Đơn hàng #{{ order.order_code }}</h1>
                 <a href="{% url 'order_history' %}" class="back-link"> &lt; Quay lại Lịch sử đơn hàng</a>
             </div>
 
@@ -32,7 +32,7 @@
                         <h3>Thông tin chung</h3>
                         <div class="info-group">
                             <span class="info-label">Mã đơn hàng</span>
-                            <span class="info-value">#{{ order.id }}</span>
+                            <span class="info-value">#{{ order.order_code }}</span>
                         </div>
                         <div class="info-group">
                             <span class="info-label">Ngày đặt</span>
@@ -45,6 +45,7 @@
                                 {% elif order.status == 'Completed' %}completed
                                 {% elif order.status == 'Cancelled' %}cancelled
                                 {% endif %}">
+                            <span class="order-status" style="color: #10B981; font-weight: bold;">
                                 {{ order.status }}
                             </span>
                         </div>
@@ -90,7 +91,11 @@
                             <tbody>
                                 {% for item in order_items %}
                                     <tr>
-                                        <td>{{ item.product.name }}</td>
+                                        <td>
+                                            <a href="{% url 'product_detail' item.product.id %}" style="text-decoration: none; color: inherit; font-weight: 500;">
+                                                {{ item.product.name }}
+                                            </a>
+                                        </td>
                                         <td>{{ item.price_at_purchase|floatformat:0 }} VNĐ</td>
                                         <td>x{{ item.quantity }}</td>
                                         <td>{{ item.quantity|mul:item.price_at_purchase|floatformat:0 }} VNĐ</td>

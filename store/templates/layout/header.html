@@ -1,10 +1,16 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/store/notification.css' %}">
+<style>
+    /* Mặc định (Theme sáng): Ẩn logo tối, hiện logo sáng */
+    .logo-dark { display: none; }
+    .logo-light { display: block; }
+</style>
 <header class="header">
     <div class="header-content">
         <div class="header-left">
             <a href="{% url 'home' %}" class="logo">
-                <img src="{% static 'image/bodah-logo-black.png' %}" alt="BODAH Logo" class="logo-img">
+                <img src="{% static 'image/bodah-logo-black.png' %}" alt="BODAH Logo" class="logo-img logo-light">
+                <img src="{% static 'image/bodah-logo-white.png' %}" alt="BODAH Logo" class="logo-img logo-dark">
             </a>
 
             <!-- <nav class="nav-links">
@@ -75,7 +81,7 @@
                 <div class="dropdown">
                     <button class="dropdown-toggle icon-btn" id="user-menu-toggle">
                         {% if user.userprofile.avatar %}
-                            <img src="{{ user.userprofile.avatar.url }}" alt="{{ user.username }}" class="header-icon" style="border-radius: 50%; object-fit: cover;">
+                            <img src="{{ user.userprofile.avatar.url }}" alt="{{ user.username }}" class="header-icon" style="border-radius: 50%; object-fit: cover; filter: none;">
                         {% else %}
                             <img src="{% static 'image/user_icon.svg' %}" alt="User" class="header-icon">
                         {% endif %}

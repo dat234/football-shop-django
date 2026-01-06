@@ -4,7 +4,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Thanh toán đơn hàng #{{ order.id }}</title>
+    <title>Thanh toán đơn hàng #{{ order.order_code }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/store/header.css' %}">
     <link rel="stylesheet" href="{% static 'css/store/footer.css' %}">
@@ -51,7 +51,7 @@
                     </div>
                     <div class="detail-row">
                         <span class="label">Nội dung</span>
-                        <span class="value highlight-blue">DH{{ order.id }} <i class="copy-icon" onclick="copyText('DH{{ order.id }}')">
+                        <span class="value highlight-blue">{{ order.order_code }} <i class="copy-icon" onclick="copyText('{{ order.order_code }}')">
                             <img src="{% static 'image/copy_icon.svg' %}" alt="Copy" class="copy-icon-img">
                         </i></span>
                     </div>
@@ -99,7 +99,7 @@
             <div class="cart-summary-card">
                 <h3>Giỏ hàng</h3>
                 <div class="item-list">
-                    {% for item in order.items.all %}
+                    {% for item in order.items %}
                     <div class="summary-item">
                         <div class="item-img">
                             {% if item.product.image %}
@@ -131,6 +131,7 @@
 
     {% include "layout/footer.html" %}
 
+    <script src="{% static 'js/theme-toggle.js' %}"></script>
     <script src="{% static 'js/toast.js' %}"></script>
     <script>
         // Tự động hiển thị thông báo từ Server (Django messages) bằng Toast

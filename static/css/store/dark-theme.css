@@ -370,9 +370,12 @@ body {
     color: var(--text-primary);
 }
 
-/* Logo invert for dark theme */
-[data-theme="dark"] .logo-img {
-    filter: invert(1) brightness(1.2);
+/* Logo switch for dark theme */
+[data-theme="dark"] .logo-light {
+    display: none;
+}
+[data-theme="dark"] .logo-dark {
+    display: block;
 }
 
 /* Cart icon invert for dark theme */
@@ -1085,4 +1088,158 @@ body {
 
 [data-theme="dark"] .section-subtitle {
     color: var(--text-secondary);
+}
+
+/* ===================================== */
+/* PAYMENT INFO PAGE DARK THEME         */
+/* ===================================== */
+
+/* 1. Container & Cards Background */
+[data-theme="dark"] .payment-left-section,
+[data-theme="dark"] .cart-summary-card {
+    background: var(--card-bg); /* Màu nền thẻ tối (#1e293b) */
+    box-shadow: 0 4px 20px var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+/* 2. Header & Links */
+[data-theme="dark"] .payment-header-row h3 {
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .back-link {
+    color: var(--text-secondary);
+}
+[data-theme="dark"] .back-link:hover {
+    color: #10B981;
+}
+
+/* 3. Instruction Box (Hộp hướng dẫn) */
+[data-theme="dark"] .instruction-box {
+    /* Đổi nền xanh nhạt thành nền tối pha chút xanh dương */
+    background-color: rgba(14, 165, 233, 0.1); 
+    border-color: rgba(14, 165, 233, 0.3);
+}
+
+[data-theme="dark"] .instruction-box h4 {
+    color: #38bdf8; /* Xanh dương sáng hơn để nổi trên nền tối */
+}
+
+[data-theme="dark"] .step-list li {
+    color: var(--text-primary);
+}
+
+/* 4. Bank Info Details (Thông tin chuyển khoản) */
+[data-theme="dark"] .bank-details h4 {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .detail-row {
+    border-bottom-color: var(--border-color); /* Đổi màu đường kẻ đứt */
+}
+
+[data-theme="dark"] .detail-row .label {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .detail-row .value {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .highlight-blue {
+    color: #60a5fa !important; /* Màu xanh dương sáng hơn */
+}
+
+[data-theme="dark"] .note-box {
+    background: var(--bg-primary); /* Nền tối hơn card một chút */
+    color: var(--text-secondary);
+}
+
+/* Icon copy đảo màu cho sáng lên */
+[data-theme="dark"] .copy-icon-img {
+    filter: invert(1); 
+    opacity: 0.7;
+}
+
+/* 5. QR Code Box */
+[data-theme="dark"] .qr-title {
+    color: var(--text-primary);
+}
+
+/* Đảm bảo ảnh QR luôn có viền trắng hoặc nền trắng để dễ quét */
+[data-theme="dark"] .qr-img-wrapper img {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* 6. Upload Section (Phần tải ảnh) */
+[data-theme="dark"] .upload-proof-section {
+    border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .upload-proof-section h4 {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .upload-desc {
+    color: var(--text-secondary);
+}
+
+/* Nút chọn file */
+[data-theme="dark"] .upload-btn {
+    background: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .upload-btn:hover {
+    background: var(--hover-bg);
+    border-color: #10B981;
+    color: #10B981;
+}
+
+[data-theme="dark"] #file-name-display {
+    color: var(--text-secondary);
+}
+
+/* 7. Cart Summary (Cột phải) */
+[data-theme="dark"] .cart-summary-card h3 {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .cart-summary-card hr {
+    border-top: 1px solid var(--border-color);
+    background: transparent;
+    height: 0;
+}
+
+[data-theme="dark"] .item-info .name {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .item-info .variant {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .item-info .price {
+    color: #10B981;
+}
+
+[data-theme="dark"] .item-img {
+    background: var(--bg-primary); /* Nền chỗ ảnh nếu không có ảnh */
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .total-row {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .total-row span:last-child {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .total-row.final span {
+    color: #10B981;
 }

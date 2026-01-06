@@ -114,6 +114,7 @@ body {
     border-radius: 20px;
     font-size: 0.95rem;
     font-weight: 600;
+    color: #10B981;
 }
 /* Bạn có thể thêm các class màu sắc khác tùy theo logic backend của bạn */
 .order-status.pending { background-color: #fff3cd; color: #856404; }

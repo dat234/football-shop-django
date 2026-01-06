@@ -7,9 +7,16 @@ from django.db.models import Q, Avg # Import Avg để tính trung bình
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.urls import reverse
+import random
+import string
 
 # Import từ project của bạn
 from .models import Product, Category, Order, OrderItem, Voucher, Review, Cart, CartItem, UserProfile
+
+# Hàm hỗ trợ sinh mã đơn hàng ngẫu nhiên (VD: 839201)
+def generate_order_code():
+    # Tạo chuỗi 6 số ngẫu nhiên. Bạn có thể thêm chữ cái nếu muốn: string.ascii_uppercase + string.digits
+    return 'DH' + ''.join(random.choices(string.digits, k=6))
 
 # -----------------------------------------------------------------------------
 # GĐ 19: Home (Tìm kiếm, Lọc, Sắp xếp, Phân trang)
@@ -24,10 +31,8 @@ def home(request):
 
     # Lọc theo tìm kiếm
     if search_query:
-        # Sử dụng Q objects để tìm kiếm trên nhiều trường, hiệu quả hơn nhiều
-        products = products.filter(
-            Q(name__icontains=search_query) | Q(description__icontains=search_query)
-        )
+        # Chỉ tìm kiếm trong tên sản phẩm
+        products = products.filter(name__icontains=search_query)
 
     # Lọc theo danh mục
     if category_id:
@@ -431,46 +436,70 @@ def checkout(request):
 
             payment_method = request.POST.get('payment_method', 'cod')
 
-            initial_status = 'Mới'
+            # Sinh mã đơn hàng ngay tại đây để dùng chung cho cả Session (QR) và DB (COD)
+            new_order_code = generate_order_code()
+
+            # --- LOGIC MỚI: TÁCH LUỒNG COD VÀ QR ---
             if payment_method == 'qr':
-                initial_status = 'Chờ thanh toán'
-
-            order_data = {
-                'full_name': full_name, 'email': email, 'phone': phone, 'address': address,
-                'total_price': total_price, 'discount_amount': discount_amount, 'voucher': voucher,
-                'payment_method': payment_method,
-                'status': initial_status,
-            }
-            if request.user.is_authenticated: order_data['user'] = request.user
-
-            try:
-                new_order = Order.objects.create(**order_data)
-
+                # 1. Kiểm tra tồn kho trước (nhưng chưa trừ)
                 for item_data in detailed_cart_items:
-                    product = item_data['product']
-                    quantity = item_data['quantity']
-                    product.refresh_from_db()
-                    if product.stock < quantity:
-                        new_order.delete()
-                        msg = f"Sản phẩm '{product.name}' vừa hết hàng hoặc không đủ số lượng."
+                    if item_data['product'].stock < item_data['quantity']:
+                        msg = f"Sản phẩm '{item_data['product'].name}' không đủ số lượng."
                         if is_ajax: return JsonResponse({'status': 'error', 'message': msg})
-                        messages.error(request, msg)
-                        return redirect('cart_view')
-                    
-                    OrderItem.objects.create(
-                        order=new_order, product=product, quantity=quantity, price_at_purchase=product.price
-                    )
-                    product.stock -= quantity
-                    product.save()
-
-                payment_method = request.POST.get('payment_method')
+                        messages.error(request, msg); return redirect('cart_view')
                 
-                if payment_method == 'qr':
-                    # Với QR: KHÔNG xóa giỏ hàng ngay, để người dùng có thể back lại nếu muốn đổi ý
-                    msg = ""
-                    success_url = reverse('payment_info', args=[new_order.id])
-                else:
-                    # Với COD: Xóa giỏ hàng và session ngay lập tức
+                
+                # Lưu ý: Decimal không lưu được vào session JSON, cần chuyển sang float/str
+                request.session['pending_order'] = {
+                    'full_name': full_name,
+                    'email': email,
+                    'phone': phone,
+                    'address': address,
+                    'total_price': float(total_price),
+                    'discount_amount': float(discount_amount),
+                    'voucher_code': voucher.code if voucher else None,
+                    'payment_method': 'qr',
+                    'order_code': new_order_code  # Lưu mã đơn hàng vào session
+                }
+                
+                msg = "Vui lòng thực hiện thanh toán."
+                success_url = reverse('payment_info') # Không cần ID nữa
+                
+                if is_ajax:
+                    return JsonResponse({'status': 'success', 'message': msg, 'redirect_url': success_url})
+                return redirect(success_url)
+
+            else: 
+                # --- LOGIC CŨ CHO COD (Tạo đơn ngay) ---
+                order_data = {
+                    'full_name': full_name, 'email': email, 'phone': phone, 'address': address,
+                    'total_price': total_price, 'discount_amount': discount_amount, 'voucher': voucher,
+                    'payment_method': 'cod',
+                    'order_code': new_order_code, # Lưu mã vào DB
+                    'status': 'Mới',
+                }
+                if request.user.is_authenticated: order_data['user'] = request.user
+
+                try:
+                    new_order = Order.objects.create(**order_data)
+
+                    for item_data in detailed_cart_items:
+                        product = item_data['product']
+                        quantity = item_data['quantity']
+                        product.refresh_from_db() # Lấy tồn kho mới nhất
+                        if product.stock < quantity:
+                            new_order.delete() # Rollback
+                            msg = f"Sản phẩm '{product.name}' vừa hết hàng."
+                            if is_ajax: return JsonResponse({'status': 'error', 'message': msg})
+                            messages.error(request, msg); return redirect('cart_view')
+                        
+                        OrderItem.objects.create(
+                            order=new_order, product=product, quantity=quantity, price_at_purchase=product.price
+                        )
+                        product.stock -= quantity
+                        product.save()
+
+                    # Xóa giỏ hàng và session
                     if request.user.is_authenticated:
                         Cart.objects.filter(user=request.user).delete()
                     else:
@@ -479,24 +508,19 @@ def checkout(request):
                     if 'voucher_code' in request.session: del request.session['voucher_code']
                     if 'checkout_form_data' in request.session: del request.session['checkout_form_data']
 
-                    # Với COD: Báo thành công ngay
                     msg = "Đặt hàng thành công!"
-                    success_url = reverse('order_success') # Lấy URL trang cảm ơn
+                    success_url = reverse('order_success')
 
-                if is_ajax:
-                    return JsonResponse({
-                        'status': 'success',
-                        'message': msg,
-                        'redirect_url': success_url # JS sẽ tự chuyển trang
-                    })
+                    if is_ajax:
+                        return JsonResponse({'status': 'success', 'message': msg, 'redirect_url': success_url})
+                    return redirect(success_url)
 
-                return redirect(success_url)
-            except Exception as e:
-                if 'new_order' in locals(): new_order.delete()
-                msg = f"Đã xảy ra lỗi: {str(e)}"
-                if is_ajax: return JsonResponse({'status': 'error', 'message': msg})
-                messages.error(request, msg)
-                return redirect('checkout')
+                except Exception as e:
+                    if 'new_order' in locals(): new_order.delete()
+                    msg = f"Đã xảy ra lỗi: {str(e)}"
+                    if is_ajax: return JsonResponse({'status': 'error', 'message': msg})
+                    messages.error(request, msg)
+                    return redirect('checkout')
 
     context = {
         'cart_items': detailed_cart_items,
@@ -511,34 +535,127 @@ def checkout(request):
 # -----------------------------------------------------------------------------
 # GĐ 27: Thông tin Chuyển khoản
 # -----------------------------------------------------------------------------
-def payment_info(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
+def payment_info(request):
+    # 1. Lấy thông tin từ Session
+    pending_order = request.session.get('pending_order')
+    if not pending_order:
+        messages.error(request, "Không tìm thấy thông tin đơn hàng chờ thanh toán.")
+        return redirect('home')
     
+    # Giả lập object order để hiển thị trên template (vì template đang dùng order.total_price)
+    # Dùng class type dynamic hoặc dict
+    class TempOrder:
+        def __init__(self, data):
+            self.total_price = data['total_price']
+            self.discount_amount = data['discount_amount']
+            self.final_price = self.total_price - self.discount_amount
+            self.full_name = data['full_name']
+            self.order_code = data.get('order_code') # Lấy mã từ session để hiển thị
+            self.items = [] # Khởi tạo danh sách items
+    
+    display_order = TempOrder(pending_order)
+    
+    # Lấy danh sách sản phẩm để hiển thị (vì chưa tạo OrderItem trong DB)
+    if request.user.is_authenticated:
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        display_order.items = cart.cart_items.all()
+    else:
+        cart_session = request.session.get('cart', {})
+        items_list = []
+        for p_id, qty in cart_session.items():
+            try:
+                product = Product.objects.get(id=int(p_id))
+                items_list.append({'product': product, 'quantity': qty})
+            except Product.DoesNotExist:
+                pass
+        display_order.items = items_list
+
     if request.method == 'POST':
-        # Kiểm tra xem có file ảnh gửi lên không
         if 'payment_proof' in request.FILES:
             proof_image = request.FILES['payment_proof']
             
-            # Lưu ảnh vào model Order
-            order.payment_proof = proof_image
-            if order.status == 'Chờ thanh toán':
-                order.status = 'Đang xử lý' # Tự động cập nhật trạng thái khi đã gửi ảnh
-            order.save()
+            # --- BẮT ĐẦU TẠO ĐƠN HÀNG THỰC TẾ ---
+            try:
+                # 1. Lấy lại Voucher nếu có
+                voucher = None
+                if pending_order['voucher_code']:
+                    try:
+                        voucher = Voucher.objects.get(code=pending_order['voucher_code'])
+                    except Voucher.DoesNotExist:
+                        pass
 
-            # Xóa giỏ hàng và session sau khi đã xác nhận thanh toán QR thành công
-            if request.user.is_authenticated:
-                Cart.objects.filter(user=request.user).delete()
-            else:
-                if 'cart' in request.session: del request.session['cart']
-            
-            if 'voucher_code' in request.session: del request.session['voucher_code']
-            if 'checkout_form_data' in request.session: del request.session['checkout_form_data']
+                # 2. Tạo Order
+                order = Order.objects.create(
+                    user=request.user if request.user.is_authenticated else None,
+                    full_name=pending_order['full_name'],
+                    email=pending_order['email'],
+                    phone=pending_order['phone'],
+                    address=pending_order['address'],
+                    total_price=pending_order['total_price'],
+                    discount_amount=pending_order['discount_amount'],
+                    voucher=voucher,
+                    payment_method='qr',
+                    order_code=pending_order['order_code'], # Lưu mã từ session vào DB
+                    status='Mới', # Hoặc 'Đang xử lý' tùy bạn
+                    payment_proof=proof_image,
+                    note=f"Mã thanh toán: {pending_order.get('order_code')}" 
+                )
 
-            return redirect('order_success')
+                # 3. Tạo OrderItem và Trừ tồn kho (Lấy lại từ Cart hiện tại)
+                # Lưu ý: Cần lấy lại Cart vì Cart chưa bị xóa ở bước Checkout
+                if request.user.is_authenticated:
+                    cart = Cart.objects.get(user=request.user)
+                    cart_items = cart.cart_items.all()
+                    
+                    for item in cart_items:
+                        # Kiểm tra tồn kho lần cuối
+                        if item.product.stock < item.quantity:
+                            order.delete() # Rollback
+                            messages.error(request, f"Sản phẩm {item.product.name} vừa hết hàng.")
+                            return redirect('cart_view')
+
+                        OrderItem.objects.create(
+                            order=order, product=item.product, quantity=item.quantity, price_at_purchase=item.product.price
+                        )
+                        item.product.stock -= item.quantity
+                        item.product.save()
+                    
+                    # Xóa Cart DB
+                    cart.cart_items.all().delete()
+                
+                else:
+                    # Xử lý cho Session Cart (Guest)
+                    cart_session = request.session.get('cart', {})
+                    for p_id, qty in cart_session.items():
+                        product = Product.objects.get(id=int(p_id))
+                        if product.stock < qty:
+                            order.delete()
+                            messages.error(request, f"Sản phẩm {product.name} vừa hết hàng.")
+                            return redirect('cart_view')
+                            
+                        OrderItem.objects.create(
+                            order=order, product=product, quantity=qty, price_at_purchase=product.price
+                        )
+                        product.stock -= qty
+                        product.save()
+                    
+                    del request.session['cart']
+
+                # 4. Dọn dẹp session
+                del request.session['pending_order']
+                if 'voucher_code' in request.session: del request.session['voucher_code']
+                if 'checkout_form_data' in request.session: del request.session['checkout_form_data']
+
+                return redirect('order_success')
+
+            except Exception as e:
+                messages.error(request, f"Lỗi khi tạo đơn hàng: {str(e)}")
+                return redirect('cart_view')
+
         else:
             messages.error(request, "Vui lòng tải lên ảnh bằng chứng chuyển khoản.")
     
-    return render(request, 'store/payment_info.html', {'order': order})
+    return render(request, 'store/payment_info.html', {'order': display_order})
 
 # -----------------------------------------------------------------------------
 # GĐ 10: Trang Cảm ơn

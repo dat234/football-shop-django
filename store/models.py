@@ -8,7 +8,6 @@ from django.dispatch import receiver
 # --- CÁC LỰA CHỌN TRẠNG THÁI ---
 ORDER_STATUS_CHOICES = [
     ('Mới', 'Mới'),
-    ('Chờ thanh toán', 'Chờ thanh toán'),
     ('Đang xử lý', 'Đang xử lý'),
     ('Đang giao', 'Đang giao'),
     ('Hoàn thành', 'Hoàn thành'),
@@ -65,6 +64,7 @@ class Voucher(models.Model):
 
 # --- MODEL ORDER (Như cũ) ---
 class Order(models.Model):
+    order_code = models.CharField(max_length=20, unique=True, editable=False, null=True, help_text="Mã đơn hàng hiển thị cho khách (VD: DH123456)")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     full_name = models.CharField(max_length=255)
     email = models.EmailField(max_length=255)
@@ -80,13 +80,14 @@ class Order(models.Model):
     discount_amount = models.DecimalField(max_digits=10, decimal_places=0, default=0, help_text="Số tiền đã được giảm")
 
     payment_proof = models.ImageField(upload_to='payment_proofs/', null=True, blank=True)
+    note = models.TextField(blank=True, null=True, help_text="Ghi chú đơn hàng hoặc mã giao dịch")
     
     @property
     def final_price(self):
         return self.total_price - self.discount_amount
     
     def __str__(self):
-        return f"Đơn hàng #{self.id} - {self.full_name}"
+        return f"Đơn hàng #{self.order_code or self.id} - {self.full_name}"
 
 # --- MODEL ORDERITEM (Như cũ) ---
 class OrderItem(models.Model):
@@ -96,7 +97,7 @@ class OrderItem(models.Model):
     price_at_purchase = models.DecimalField(max_digits=10, decimal_places=0)
     
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} (Đơn hàng #{self.order.id})"
+        return f"{self.quantity} x {self.product.name} (Đơn hàng #{self.order.order_code})"
 
 # --- MODEL REVIEW (MỚI) ---
 class Review(models.Model):
@@ -187,25 +188,18 @@ def track_order_status(sender, instance, **kwargs):
 @receiver(post_save, sender=Order)
 def create_order_notification(sender, instance, created, **kwargs):
     if created:
-        # Chỉ tạo thông báo thành công ngay nếu là COD
-        if instance.payment_method == 'cod':
+        # Với luồng mới: Cả COD và QR khi được tạo (created=True) đều là đã xác nhận đặt hàng
+        if instance.user:
             Notification.objects.create(
                 user=instance.user,
                 title="Đặt hàng thành công",
-                message=f"Đơn hàng #{instance.id} của bạn đã được đặt thành công. Chúng tôi sẽ sớm liên hệ."
+                message=f"Đơn hàng #{instance.order_code} đã được tiếp nhận. Chúng tôi sẽ sớm xử lý."
             )
     elif instance._old_status is not None and instance._old_status != instance.status:
-        # Nếu là QR và vừa chuyển từ Chờ thanh toán -> Đang xử lý (đã upload ảnh)
-        if instance.payment_method == 'qr' and instance._old_status == 'Chờ thanh toán' and instance.status != 'Chờ thanh toán':
-             Notification.objects.create(
-                user=instance.user,
-                title="Đặt hàng thành công",
-                message=f"Chúng tôi đã nhận được thông tin thanh toán cho đơn hàng #{instance.id}. Đơn hàng đang được xử lý."
-            )
-        else:
+        if instance.user:
             # Thông báo khi trạng thái thay đổi thông thường
             Notification.objects.create(
                 user=instance.user,
                 title="Cập nhật đơn hàng",
-                message=f"Đơn hàng #{instance.id} của bạn đã chuyển sang trạng thái: {instance.status}."
+                message=f"Đơn hàng #{instance.order_code} của bạn đã chuyển sang trạng thái: {instance.status}."
             )

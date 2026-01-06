@@ -29,6 +29,7 @@
                             <tr>
                                 <th>Mã Đơn hàng</th>
                                 <th>Ngày Đặt</th>
+                                <th>Trạng thái</th>
                                 <th>Tổng tiền</th>
                                 <th>Thông tin</th>
                             </tr>
@@ -36,9 +37,10 @@
                         <tbody>
                             {% for order in orders %}
                                 <tr>
-                                    <td>#{{ order.id }}</td>
+                                    <td>#{{ order.order_code }}</td>
                                     <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
-                                    <td>{{ order.total_price|floatformat:0 }} VNĐ</td>
+                                    <td>{{ order.status }}</td>
+                                    <td>{{ order.final_price|floatformat:0 }} VNĐ</td>
                                     <td>
                                         <a href="{% url 'order_detail' order.id %}" class="btn-secondary">Xem chi tiết</a>
                                     </td>

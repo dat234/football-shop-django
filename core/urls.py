@@ -1,6 +1,6 @@
 # core/urls.py
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -16,7 +16,8 @@ from users.views import (
     register_view, login_view, logout_view, 
     order_history_view,
     order_detail_view, profile_view, verify_email_confirm,
-    get_notification_detail
+    get_notification_detail,
+    send_verification_email
 )
 from store.admin import my_admin_site
 urlpatterns = [
@@ -28,7 +29,7 @@ urlpatterns = [
     path('cart/', cart_view, name='cart_view'),
     path('update-cart/<int:product_id>/', update_cart, name='update_cart'),
     path('checkout/', checkout, name='checkout'),
-    path('payment-info/', payment_info, name='payment_info'),
+    path('payment-info/<str:order_code>/', payment_info, name='payment_info'),
     path('order-success/', order_success, name='order_success'),
     # URL cho user registration, login, logout
     path('register/', register_view, name='register'),
@@ -39,6 +40,8 @@ urlpatterns = [
     path('profile/', profile_view, name='profile'),
     path('verify-email/<uidb64>/<token>/', verify_email_confirm, name='verify_email_confirm'),
     path('notifications/<int:notification_id>/', get_notification_detail, name='notification_detail'),
+    path('accounts/', include('allauth.urls')),
+    path('send-verification/', send_verification_email, name='send_verification_email'),
 ]
 
 if settings.DEBUG:

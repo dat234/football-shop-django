@@ -209,3 +209,59 @@ body {
         font-size: 1.75rem;
     }
 }
+
+/* =================================== */
+/* GOOGLE AUTH BUTTON & DIVIDER
+/* =================================== */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #888;
+    font-size: 0.9rem;
+}
+.auth-divider::before, .auth-divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+.auth-divider span {
+    padding: 0 10px;
+}
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #333;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+.btn-google:hover {
+    background-color: #f8f9fa;
+    border-color: #c6c6c6;
+}
+.btn-google svg {
+    margin-right: 10px;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .btn-google {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+body.dark-mode .btn-google:hover {
+    background-color: #383838;
+}
+body.dark-mode .auth-divider::before, 
+body.dark-mode .auth-divider::after {
+    border-color: #444;
+}

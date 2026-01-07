@@ -463,7 +463,7 @@ def checkout(request):
                 }
                 
                 msg = "Vui lòng thực hiện thanh toán."
-                success_url = reverse('payment_info') # Không cần ID nữa
+                success_url = reverse('payment_info', kwargs={'order_code': new_order_code})
                 
                 if is_ajax:
                     return JsonResponse({'status': 'success', 'message': msg, 'redirect_url': success_url})
@@ -535,11 +535,16 @@ def checkout(request):
 # -----------------------------------------------------------------------------
 # GĐ 27: Thông tin Chuyển khoản
 # -----------------------------------------------------------------------------
-def payment_info(request):
+def payment_info(request, order_code):
     # 1. Lấy thông tin từ Session
     pending_order = request.session.get('pending_order')
     if not pending_order:
         messages.error(request, "Không tìm thấy thông tin đơn hàng chờ thanh toán.")
+        return redirect('home')
+    
+    # Kiểm tra mã đơn hàng trên URL có khớp với session không
+    if pending_order.get('order_code') != order_code:
+        messages.error(request, "Thông tin đơn hàng không hợp lệ.")
         return redirect('home')
     
     # Giả lập object order để hiển thị trên template (vì template đang dùng order.total_price)

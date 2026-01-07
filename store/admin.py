@@ -10,6 +10,9 @@ from .models import Category, Product, Order, OrderItem, Voucher, Review
 from django.contrib.admin import AdminSite # Import AdminSite
 from django.contrib.auth.models import User, Group # Import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin # Import UserAdmin, GroupAdmin
+from django.contrib.sites.models import Site
+from allauth.socialaccount.models import SocialApp, SocialAccount, SocialToken
+from allauth.account.models import EmailAddress
 
 # --- TẠO ADMIN SITE TÙY CHỈNH ---
 class MyAdminSite(AdminSite):
@@ -98,3 +101,10 @@ my_admin_site.register(Review, ReviewAdmin)
 # Đăng ký cả User và Group mặc định của Django
 my_admin_site.register(User, UserAdmin)
 my_admin_site.register(Group, GroupAdmin)
+
+# Đăng ký các model của allauth để quản lý từ admin
+my_admin_site.register(Site)
+my_admin_site.register(SocialApp)
+my_admin_site.register(SocialAccount)
+my_admin_site.register(SocialToken)
+my_admin_site.register(EmailAddress)

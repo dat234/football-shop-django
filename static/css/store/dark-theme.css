@@ -333,6 +333,10 @@ body {
     color: #10B981;
 }
 
+[data-theme="dark"] .google-text {
+    color: var(--text-primary);
+}
+
 /* Messages dark theme */
 [data-theme="dark"] .message {
     background: var(--card-bg);
@@ -1054,6 +1058,13 @@ body {
     background-color: rgba(245, 158, 11, 0.15) !important;
     color: #fbbf24 !important;
     border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Fix badge success color in dark mode */
+[data-theme="dark"] .badge-success {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #10B981 !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
 }
 
 /* ===================================== */

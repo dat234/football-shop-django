@@ -1,5 +1,3 @@
-# users/views.py
-
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -11,6 +9,10 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.models import User
+
+from django.contrib import messages
+from django.shortcuts import redirect
+from allauth.account.models import EmailAddress
 # Import thêm Cart, CartItem, Product để xử lý gộp giỏ hàng
 from store.models import Order, OrderItem, Review, Cart, CartItem, Product, UserProfile, Notification
 from users.templates.users.forms import VietnameseAuthenticationForm, VietnameseUserCreationForm
@@ -216,3 +218,28 @@ def get_notification_detail(request, notification_id):
         'message': notification.message,
         'created_at': notification.created_at.strftime('%H:%M %d/%m/%Y')
     })
+
+def send_verification_email(request):
+    if request.user.is_authenticated:
+        # Lấy bản ghi EmailAddress của user hiện tại
+        email_obj = EmailAddress.objects.filter(user=request.user, email=request.user.email).first()
+        
+        if email_obj:
+            if email_obj.verified:
+                messages.info(request, "Email của bạn đã được xác minh.")
+            else:
+                # Gửi mail xác nhận bằng hàm chuẩn của phiên bản mới
+                email_obj.send_confirmation(request)
+                messages.success(request, "Một email xác nhận đã được gửi tới hộp thư của bạn!")
+        else:
+            # Trường hợp user chưa có bản ghi EmailAddress (hiếm gặp)
+            email_obj = EmailAddress.objects.create(
+                user=request.user, 
+                email=request.user.email, 
+                primary=True, 
+                verified=False
+            )
+            email_obj.send_confirmation(request)
+            messages.success(request, "Đã khởi tạo thông tin và gửi email xác nhận!")
+            
+    return redirect('profile')

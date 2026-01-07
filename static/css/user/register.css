@@ -235,3 +235,167 @@ body {
         margin-bottom: 18px;
     }
 }
+
+/* =================================== */
+/* GOOGLE AUTH BUTTON & DIVIDER
+/* =================================== */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #888;
+    font-size: 0.9rem;
+}
+.auth-divider::before, .auth-divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #333;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+.btn-google:hover {
+    background-color: #f8f9fa;
+    border-color: #c6c6c6;
+}
+.btn-google svg {
+    margin-right: 10px;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .btn-google {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+body.dark-mode .btn-google:hover {
+    background-color: #383838;
+}
+body.dark-mode .auth-divider::before, 
+body.dark-mode .auth-divider::after {
+    border-color: #444;
+}
+
+/* =================================== */
+/* SPLIT LAYOUT
+/* =================================== */
+
+/* 1. Container rộng hơn */
+.auth-container.wide-container {
+    max-width: 900px;
+    padding: 40px 50px;
+}
+
+/* 2. Grid Layout */
+.auth-grid {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    margin-top: 10px;
+}
+
+/* Cột trái: Form */
+.auth-col-left {
+    flex: 1.4;
+    padding-right: 30px; /* Giảm khoảng cách đến đường kẻ */
+}
+
+/* Cột phải: Google */
+.auth-col-right {
+    flex: 1;
+    padding-left: 30px; /* Sát đường kẻ hơn (cũ là 40px) */
+    
+    /* QUAN TRỌNG: Đẩy nội dung lên trên và căn trái */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    align-items: flex-start;     
+}
+
+/* Wrapper */
+.google-wrapper {
+    width: 100%;
+    text-align: left; /* Căn trái nội dung */
+}
+
+/* Label: "Đăng ký nhanh hơn với" */
+.google-text {
+    /* Copy style của label bên trái để đồng bộ */
+    display: block;
+    font-weight: 600;
+    color: #334155;      /* Màu giống "Tên đăng nhập" */
+    margin-bottom: 8px;  /* Khoảng cách giống label và input bên trái */
+    font-size: 0.95rem;
+}
+
+/* Nút Google */
+.btn-google {
+    /* Đảm bảo nút không bị quá to hoặc quá nhỏ */
+    width: 100%; 
+    padding: 11px 15px; /* Chỉnh padding khớp chiều cao với input text bên trái */
+}
+
+
+/* =================================== */
+/* ĐƯỜNG KẺ DỌC
+/* =================================== */
+.auth-divider-vertical {
+    width: 1px;
+    background-color: #e0e0e0;
+    margin: 0;
+    /* Xóa các style định vị chữ "Hoặc" cũ vì đã xóa trong HTML */
+}
+
+/* Dark Mode cho đường kẻ */
+body.dark-mode .auth-divider-vertical {
+    background-color: #444;
+}
+body.dark-mode .google-text {
+    color: #e0e0e0; /* Màu chữ sáng trên nền tối */
+}
+
+
+/* =================================== */
+/* RESPONSIVE (MOBILE)
+/* =================================== */
+@media (max-width: 768px) {
+    .auth-container.wide-container {
+        max-width: 450px;
+    }
+
+    .auth-grid {
+        flex-direction: column;
+    }
+
+    .auth-col-left {
+        padding-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .auth-col-right {
+        padding-left: 0;
+        /* Trên mobile có thể để nút Google full width hoặc căn giữa tùy ý */
+        width: 100%;
+    }
+
+    /* Đường kẻ biến thành đường ngang mờ hoặc ẩn đi */
+    .auth-divider-vertical {
+        width: 100%;
+        height: 1px;
+        margin: 20px 0;
+    }
+}

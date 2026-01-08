@@ -10,12 +10,12 @@ from django.urls import reverse
 import random
 import string
 
-# Import từ project của bạn
+
 from .models import Product, Category, Order, OrderItem, Voucher, Review, Cart, CartItem, UserProfile
 
 # Hàm hỗ trợ sinh mã đơn hàng ngẫu nhiên (VD: 839201)
 def generate_order_code():
-    # Tạo chuỗi 6 số ngẫu nhiên. Bạn có thể thêm chữ cái nếu muốn: string.ascii_uppercase + string.digits
+    # Tạo chuỗi 6 số ngẫu nhiên.
     return 'DH' + ''.join(random.choices(string.digits, k=6))
 
 # -----------------------------------------------------------------------------
@@ -560,7 +560,7 @@ def payment_info(request, order_code):
     
     display_order = TempOrder(pending_order)
     
-    # Lấy danh sách sản phẩm để hiển thị (vì chưa tạo OrderItem trong DB)
+    # Lấy danh sách sản phẩm để hiển thị
     if request.user.is_authenticated:
         cart, _ = Cart.objects.get_or_create(user=request.user)
         display_order.items = cart.cart_items.all()
@@ -606,8 +606,7 @@ def payment_info(request, order_code):
                     note=f"Mã thanh toán: {pending_order.get('order_code')}" 
                 )
 
-                # 3. Tạo OrderItem và Trừ tồn kho (Lấy lại từ Cart hiện tại)
-                # Lưu ý: Cần lấy lại Cart vì Cart chưa bị xóa ở bước Checkout
+                # 3. Tạo OrderItem và Trừ tồn kho 
                 if request.user.is_authenticated:
                     cart = Cart.objects.get(user=request.user)
                     cart_items = cart.cart_items.all()

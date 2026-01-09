@@ -1,6 +1,8 @@
 .header {
     background: #fff;
-    padding: 1px 30px;
+    width: 100%;
+    padding: 10px 30px;
+    box-sizing: border-box;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     position: sticky;
     top: 0;
@@ -20,6 +22,8 @@
     /* Ensure content sits above snowfall */
     position: relative;
     z-index: 1;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .header-left {
@@ -549,4 +553,74 @@
 
 .header .christmas-lights span:nth-child(even) {
     animation-delay: 1s;
+}
+
+/* =================================== */
+/* RESPONSIVE HEADER
+/* =================================== */
+@media (max-width: 1024px) {
+    .header-left {
+        gap: 30px;
+    }
+    .nav-links {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 10px 15px; /* Giảm padding */
+    }
+
+    .header-content {
+        flex-direction: row; /* QUAN TRỌNG: Giữ nằm ngang */
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .header-left {
+        gap: 10px;
+        width: auto; /* Để tự động co giãn */
+    }
+
+    .logo-img {
+        height: 35px; /* Thu nhỏ logo */
+        width: auto;
+    }
+    
+    /* Ẩn chữ Logo Bodah nếu cần thiết, hoặc giữ lại */
+    /* .logo-text { display: none; } */
+
+    /* Ẩn menu text (Trang chủ, Sản phẩm) trên mobile */
+    .nav-links {
+        display: none; 
+    }
+
+    .header-actions {
+        gap: 8px;
+    }
+
+    /* Ẩn chữ "Giỏ hàng", "Thông báo", chỉ hiện Icon */
+    .header-actions .action-link span,
+    .header-actions .action-link strong,
+    .btn-secondary { 
+        display: none !important; 
+    }
+    
+    /* Hiển thị lại nút/icon bên trong wrapper */
+    .header-actions a, 
+    .header-actions button {
+        padding: 5px;
+        height: 35px;
+        width: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .cart-img, .header-icon {
+        width: 24px;
+        height: 24px;
+        padding: 0;
+    }
 }

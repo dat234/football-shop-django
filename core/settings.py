@@ -9,12 +9,14 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#4$4ljmsx96y=3w!2@9g7z&^zyv-6ay#9dba&#zrz8d7c1pixk'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-#4$4ljmsx96y=3w!2@9g7z&^zyv-6ay#9dba&#zrz8d7c1pixk')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://*.railway.app').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -137,6 +139,10 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -156,6 +162,10 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 1800
 # 3. Bảo mật Cookie
 SESSION_COOKIE_HTTPONLY = True 
-# SESSION_COOKIE_SECURE = True # (Bật khi deploy có HTTPS)
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
 # 4. Tự động làm mới thời gian hết hạn
 SESSION_SAVE_EVERY_REQUEST = True

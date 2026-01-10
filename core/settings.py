@@ -17,6 +17,10 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://football-shop-django-production.up.railway.app', 
+]
+
 # Application definition
 INSTALLED_APPS = [
     'users',
@@ -157,7 +161,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 1800
 # 3. Bảo mật Cookie
 SESSION_COOKIE_HTTPONLY = True 
-# SESSION_COOKIE_SECURE = True # (Bật khi deploy có HTTPS)
+SESSION_COOKIE_SECURE = True # (Bật khi deploy có HTTPS)
+CSRF_COOKIE_SECURE = True  # (Bật khi deploy có HTTPS)
 # 4. Tự động làm mới thời gian hết hạn
 SESSION_SAVE_EVERY_REQUEST = True
 

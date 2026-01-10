@@ -12,9 +12,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#4$4ljmsx96y=3w!2@9g7z&^zyv-6ay#9dba&#zrz8d7c1pixk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 # Application definition
 INSTALLED_APPS = [
@@ -159,3 +160,7 @@ SESSION_COOKIE_HTTPONLY = True
 # SESSION_COOKIE_SECURE = True # (Bật khi deploy có HTTPS)
 # 4. Tự động làm mới thời gian hết hạn
 SESSION_SAVE_EVERY_REQUEST = True
+
+# Cấu hình file tĩnh cho Production
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"

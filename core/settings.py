@@ -147,7 +147,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'p6lek4@gmail.com'
-EMAIL_HOST_PASSWORD = 'qozn wyue kgum gypt'
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = 'BODAH Shop <p6lek4@gmail.com>'
 
 # --- CẤU HÌNH SESSION & SECURITY ---

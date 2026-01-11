@@ -56,6 +56,7 @@ def register_view(request):
         form = VietnameseUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             # Xóa sạch session cũ trước khi login mới
             request.session.flush()
             login(request, user)
